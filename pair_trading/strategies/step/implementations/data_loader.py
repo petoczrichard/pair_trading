@@ -7,7 +7,9 @@ class DataLoaderStep(AbstractStep):
     alias = 'data_loader'
 
     def run(self):
-        data_loader = PairTradingCatalog(**self.config['setup'])
+        data_loader = PairTradingCatalog.create_instance(
+            **self.config['setup']
+        )
         tickers = data_loader.get_tickers(
             **(self.config.get('get_tickers') or {})
         )
@@ -15,9 +17,9 @@ class DataLoaderStep(AbstractStep):
             tickers=tickers,
             **(self.config.get('get_metadata') or {})
         )
-        prices = data_loader.get_prices(
+        ohlcv = data_loader.get_ohlcv(
             tickers=tickers,
-            **(self.config.get('get_prices') or {})
+            **(self.config.get('get_ohlcv') or {})
         )
 
-        return metadata, prices
+        return metadata, ohlcv

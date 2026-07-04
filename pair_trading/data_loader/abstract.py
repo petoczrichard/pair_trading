@@ -16,5 +16,5 @@ class AbstractDataLoader(ABC, metaclass=PairTradingMeta):
         pass
 
     @abstractmethod
-    def get_prices(self, **kwargs):
+    def get_ohlcv(self, **kwargs):
         pass

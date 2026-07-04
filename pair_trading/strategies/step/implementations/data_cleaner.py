@@ -35,8 +35,8 @@ class DataCleanerStep(AbstractStep):
         )
 
         filtered_prices = data_cleaner.clean_prices(
-            prices=prices,
-            volumes=currency_volume,
+            prices=prices[filtered_metadata.index.tolist()],
+            volumes=currency_volume[filtered_metadata.index.tolist()],
             **(self.config['clean_prices'] or {}),
         )
 
@@ -67,7 +67,7 @@ class DataCleanerStep(AbstractStep):
         if 'minimum_liquidity' in self.config:
             filtered_prices = data_cleaner.minimum_liquidity(
                 prices=filtered_prices,
-                currency_volume=currency_volume,
+                currency_volume=currency_volume[filtered_prices.columns],
                 formation_start=formation_start,
                 formation_end=formation_end,
                 **(self.config['minimum_liquidity'] or {}),

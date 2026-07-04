@@ -22,6 +22,6 @@ class StaticDataSource(AbstractDataLoader):
         metadata.index = metadata['symbol'].rename(None)
         return metadata
 
-    def get_prices(self, market: str, **kwargs) -> pd.DataFrame:
+    def get_ohlcv(self, market: str, **kwargs) -> pd.DataFrame:
         file_name = RESOURCE_FOLDER / market / "ohlcv.parquet"
         return pd.read_parquet(file_name)

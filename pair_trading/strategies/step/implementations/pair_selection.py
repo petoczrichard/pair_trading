@@ -26,11 +26,11 @@ class PairSelectionStep(AbstractStep):
         )
 
         pair_selection.calculate_pairs(
-            **(self.config['calculate_pairs'] or {}),
+            **(self.config.get('calculate_pairs') or {}),
         )
 
         filtered_pairs = pair_selection.filter_pairs(
-            **(self.config['filter_pairs'] or {}),
+            **(self.config.get('filter_pairs') or {}),
         )
 
         return filtered_pairs

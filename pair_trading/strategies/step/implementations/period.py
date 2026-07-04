@@ -31,5 +31,5 @@ class PeriodStep(AbstractStep):
             time_step=self.config['timestep'],
             number_of_periods=self.config.get('number_of_periods'),
             first_valid_date=first_formation_start,
-            last_valid_date=self.config.get('period_end', ohlcv.index.max()),
+            last_valid_date=self.config.get('period_end') or ohlcv.index.max(),
         )

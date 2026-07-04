@@ -67,7 +67,7 @@ class YahooDataSource(AbstractDataLoader):
 
         return pd.DataFrame(ticker_info).T
 
-    def get_prices(self, tickers: list[str], step: int = 50) -> pd.DataFrame:
+    def get_ohlcv(self, tickers: list[str], step: int = 50) -> pd.DataFrame:
         start = 0
         data_list = []
 

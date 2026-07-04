@@ -1,0 +1,66 @@
+data_loader:
+  setup:
+    category: data_loader
+    variant: static
+  get_ohlcv:
+    market: united_states
+  get_metadata:
+    market: united_states
+
+period:
+  period_start: 2007-12-31
+  period_end: null
+  formation_length: + 24 monthend
+  formation_trading_gap: + 1 days
+  trading_length: + 12 monthend
+  timestep: + 1 monthend
+
+data_cleaner:
+  setup:
+    category: data_cleaner
+    variant: equity
+  clean_tickers: null
+  clean_prices: null
+  remove_negative_prices: null
+  remove_too_many_zero_returns: null
+  remove_stationary_prices: null
+  minimum_liquidity: null
+
+grouper:
+  setup:
+    category: grouper
+    variant: economic_classification
+  create_groups:
+    group_by_field: industry
+
+pair_selection:
+  setup:
+    name: pair_selection
+    pair_type: engle_granger
+  calculate_pairs:
+    check_stationary_assets: false
+  filter_pairs:
+    filters:
+      - type: individual
+        property_name: is_long_short
+      - type: individual
+        property_name: spread_adf_pvalue
+        max_limit: 0.05
+      - type: global
+        name: asset_limit
+        maximum: 5
+        sort_by: spread_adf_pvalue
+
+backtest:
+  setup:
+    initial_portfolio_value: 10_000_000
+    leverage: 2
+    max_adv_participation_rate: 0.1
+    overlapping_periods: 12
+    transaction_cost:
+      commision: 0
+      borrowing_cost: 0
+      spread: null
+      slippage: null
+      market_impact: null
+      adv: null

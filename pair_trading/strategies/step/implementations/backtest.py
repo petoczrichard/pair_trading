@@ -59,11 +59,7 @@ class BacktestStep(AbstractStep):
                         **(
                             trade_source['basket'] | {
                                 'asset_ids': [
-                                    ticker_to_index[
-                                        (asset_ids :=trade_source[
-                                            'basket'
-                                        ]['asset_ids'])[0]
-                                    ],
+                                    ticker_to_index[(asset_ids :=trade_source['basket']['asset_ids'])[0]],  # noqa: E501
                                     ticker_to_index[asset_ids[1]],
                                 ]
                             }

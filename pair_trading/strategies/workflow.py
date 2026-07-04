@@ -1,3 +1,5 @@
+from itertools import chain
+
 from pair_trading.catalog import PairTradingCatalog
 
 
@@ -48,4 +50,49 @@ class Workflow(metaclass=PairTradingCatalog):
         )
 
     def run(self):
-        self.metadata, self.data = self.data_loader.run()
+        self.metadata, self.ohlcv = self.data_loader.run()
+        periods = self.period.run(self.ohlcv)
+
+        trade_sources = []
+
+        for period in periods:
+            period_dates = period.date_properties
+
+            period_metadata, period_prices = self.data_cleaner.run(
+                metadata=self.metadata,
+                ohlcv=self.ohlcv,
+                formation_start=period_dates['formation_start'],
+                formation_end=period_dates['formation_end'],
+                trading_end=period_dates['trading_end'],
+            )
+
+            pair_names = self.grouper.run(
+                prices=period_prices,
+                metadata=period_metadata,
+                formation_start=period_dates['formation_start'],
+                formation_end=period_dates['formation_end'],
+            )
+
+            selected_pairs = self.pair_selection.run(
+                pair_names=pair_names,
+                prices=period_prices,
+                formation_start=period_dates['formation_start'],
+                formation_end=period_dates['formation_end'],
+                trading_start=period_dates['trading_start'],
+                trading_end=period_dates['trading_end'],
+            )
+
+            max_ratio_of_portfolio_value = 1 / len(selected_pairs)
+            period_trade_sources = [
+                trade | {'max_ratio_of_portfolio_value': max_ratio_of_portfolio_value}  # noqa: E501
+                for pair in selected_pairs
+                for trade in pair.get_trades_cpp(period="trading")
+            ]
+            trade_sources.append(period_trade_sources)
+
+        trade_sources = list(chain.from_iterable(trade_sources))
+
+        self.backtester = self.backtest.run(
+            ohlcv=self.ohlcv,
+            trade_sources=trade_sources,
+        )
