@@ -1,0 +1,44 @@
+[build-system]
+requires = [
+    "scikit-build-core",
+    "nanobind",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pair_trading"
+version = "0.1.0"
+
+authors = [
+    { name = "Richard Petocz", email = "petocz.ricsi@gmail.com" }
+]
+
+requires-python = ">=3.12"
+
+dependencies = [
+    "pandas",
+    "numpy",
+    "numba",
+    "plotly",
+    "matplotlib",
+    "nbformat>=4.2.0",
+    "scikit-learn",
+    "statsmodels",
+    "arch",
+    "pylr2",
+    "requests",
+    "yfinance",
+    "pyarrow",
+    "lxml",
+    "openpyxl",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+pair_trading = [
+    "data/**/*.csv",
+    "data/**/*.json",
+    "data/**/*.parquet",
+]
