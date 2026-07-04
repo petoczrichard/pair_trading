@@ -34,6 +34,42 @@ def asset_limit(pairs, maximum, sort_by, ascending=True, **kwargs):
 
 
 @PairTradingCatalog.register()
+def asset_limit_ratio(pairs, ratio, sort_by, ascending=True, **kwargs):
+    target = len(pairs) * ratio
+
+    if not pairs or ratio <= 0:
+        return []
+
+    low, high = 1, len(pairs)
+    best_pairs = []
+    best_diff = float("inf")
+
+    while low <= high:
+        midpoint = (low + high) // 2
+
+        selected = asset_limit(
+            pairs=pairs,
+            maximum=midpoint,
+            sort_by=sort_by,
+            ascending=ascending,
+            **kwargs,
+        )
+
+        diff = abs(target - len(selected))
+
+        if diff < best_diff:
+            best_diff = diff
+            best_pairs = selected
+
+        if len(selected) < target:
+            low = midpoint + 1
+        else:
+            high = midpoint - 1
+
+    return best_pairs
+
+
+@PairTradingCatalog.register()
 def select_top(pairs, number, sort_by, ascending=True, **kwargs):
     return sorted(
         pairs,
