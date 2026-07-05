@@ -11,7 +11,7 @@ class Workflow(metaclass=PairTradingCatalog):
         self.data = None
         self.metadata = None
         self.backtester = None
-
+        self.portfolio = None
 
         self.data_loader = PairTradingCatalog.invoke(
             category='step',
@@ -92,7 +92,8 @@ class Workflow(metaclass=PairTradingCatalog):
 
         trade_sources = list(chain.from_iterable(trade_sources))
 
-        self.backtester = self.backtest.run(
+        self.portfolio = self.backtest.run(
             ohlcv=self.ohlcv,
             trade_sources=trade_sources,
         )
+        self.backtester = self.backtest.backtester

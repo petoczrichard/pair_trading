@@ -1,6 +1,7 @@
 import numpy as np
 
 from pair_trading.strategies.step.abstract import AbstractStep
+from pair_trading.portfolio import Portfolio
 from pair_trading.catalog import PairTradingCatalog
 
 from trading_core import Basket, TradeSource, BacktesterEngine
@@ -23,7 +24,10 @@ class BacktestStep(AbstractStep):
                 backtest_tickers.add(asset_ids[0])
                 backtest_tickers.add(asset_ids[1])
 
-        backtest_start_date = min(ts['date'] for ts in trade_sources)
+        first_trade_date = min(ts['date'] for ts in trade_sources)
+        backtest_start_index = ohlcv.index.get_loc(first_trade_date) - 1
+        backtest_start_date = ohlcv.index[backtest_start_index]
+
         backtest_end_date = max(ts['date'] for ts in trade_sources)
 
         ohlcv = ohlcv.loc[
@@ -32,6 +36,8 @@ class BacktestStep(AbstractStep):
         ]
 
         prices = ohlcv.xs('Close', level=1, axis=1)
+        prices = prices.ffill()
+        prices = prices.fillna(0)
 
         source_id_to_index = {
             source_id: index
@@ -144,6 +150,19 @@ class BacktestStep(AbstractStep):
             trade_sources=trade_sources_cpp,
             tc_engine=tc_engine,
         )
+        self.backtester = backtester
         backtester.run()
 
-        return backtester
+        cash_and_transaction_cost_fields = [
+            'cash',
+            'commision',
+            'borrowing_cost',
+            'spread',
+            'slippage',
+            'market_impact',
+        ]
+        return Portfolio(
+            backtester=backtester,
+            index=prices.index,
+            columns=prices.columns.tolist() + cash_and_transaction_cost_fields,
+        )
