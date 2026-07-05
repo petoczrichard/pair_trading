@@ -22,7 +22,7 @@ class PeriodStep(AbstractStep):
             self.config['trading_length'],
         )
 
-        return PairTradingCatalog.create_instance(
+        return PairTradingCatalog.invoke(
             name='rolling_period',
             formation_start=first_formation_start,
             formation_end=first_formation_end,

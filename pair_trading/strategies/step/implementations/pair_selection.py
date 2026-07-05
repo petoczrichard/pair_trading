@@ -15,7 +15,7 @@ class PairSelectionStep(AbstractStep):
         trading_start,
         trading_end,
     ):
-        pair_selection = PairTradingCatalog.create_instance(
+        pair_selection = PairTradingCatalog.invoke(
             pair_names=pair_names,
             prices=prices,
             formation_start=formation_start,

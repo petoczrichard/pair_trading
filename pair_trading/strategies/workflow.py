@@ -13,37 +13,37 @@ class Workflow(metaclass=PairTradingCatalog):
         self.backtester = None
 
 
-        self.data_loader = PairTradingCatalog.create_instance(
+        self.data_loader = PairTradingCatalog.invoke(
             category='step',
             variant='data_loader',
             config=config['data_loader'],
         )
 
-        self.period = PairTradingCatalog.create_instance(
+        self.period = PairTradingCatalog.invoke(
             category='step',
             variant='period',
             config=config['period'],
         )
 
-        self.data_cleaner = PairTradingCatalog.create_instance(
+        self.data_cleaner = PairTradingCatalog.invoke(
             category='step',
             variant='data_cleaner',
             config=config['data_cleaner'],
         )
 
-        self.grouper = PairTradingCatalog.create_instance(
+        self.grouper = PairTradingCatalog.invoke(
             category='step',
             variant='grouper',
             config=config['grouper'],
         )
 
-        self.pair_selection = PairTradingCatalog.create_instance(
+        self.pair_selection = PairTradingCatalog.invoke(
             category='step',
             variant='pair_selection',
             config=config['pair_selection'],
         )
 
-        self.backtest = PairTradingCatalog.create_instance(
+        self.backtest = PairTradingCatalog.invoke(
             category='step',
             variant='backtest',
             config=config['backtest'],

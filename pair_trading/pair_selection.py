@@ -19,7 +19,7 @@ class PairSelection(metaclass=PairTradingCatalog):
         trading_end,
     ):
         self.pairs = [
-            PairTradingCatalog.create_instance(
+            PairTradingCatalog.invoke(
                 category='pair',
                 variant=pair_type,
                 price1=prices[name1],
@@ -55,7 +55,7 @@ class PairSelection(metaclass=PairTradingCatalog):
                     ]
 
                 case {"type": "global"}:
-                    filtered_pairs = PairTradingCatalog.create_instance(
+                    filtered_pairs = PairTradingCatalog.invoke(
                         pairs=filtered_pairs,
                         **filter_,
                     )

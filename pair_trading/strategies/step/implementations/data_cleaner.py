@@ -24,7 +24,7 @@ class DataCleanerStep(AbstractStep):
         )
         currency_volume = volumes * (1 if is_crypto else prices)
 
-        data_cleaner = PairTradingCatalog.create_instance(
+        data_cleaner = PairTradingCatalog.invoke(
             **self.config['setup'],
         )
 

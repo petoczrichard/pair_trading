@@ -7,7 +7,7 @@ class GrouperStep(AbstractStep):
     alias = 'grouper'
 
     def run(self, prices, metadata, formation_start, formation_end):
-        grouper = PairTradingCatalog.create_instance(
+        grouper = PairTradingCatalog.invoke(
             **self.config['setup'],
         )
 

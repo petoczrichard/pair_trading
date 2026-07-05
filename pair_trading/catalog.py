@@ -36,7 +36,7 @@ class PairTradingCatalog(type):
 
     @overload
     @classmethod
-    def create_instance(
+    def invoke(
         mcls,
         *,
         name: str,
@@ -46,7 +46,7 @@ class PairTradingCatalog(type):
 
     @overload
     @classmethod
-    def create_instance(
+    def invoke(
         mcls,
         *,
         category: str,
@@ -56,7 +56,7 @@ class PairTradingCatalog(type):
         ...
 
     @classmethod
-    def create_instance(
+    def invoke(
         mcls,
         *,
         name: str | None = None,

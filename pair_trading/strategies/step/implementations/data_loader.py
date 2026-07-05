@@ -7,7 +7,7 @@ class DataLoaderStep(AbstractStep):
     alias = 'data_loader'
 
     def run(self):
-        data_loader = PairTradingCatalog.create_instance(
+        data_loader = PairTradingCatalog.invoke(
             **self.config['setup']
         )
         tickers = data_loader.get_tickers(

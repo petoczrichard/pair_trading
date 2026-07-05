@@ -82,7 +82,7 @@ class BacktestStep(AbstractStep):
 
         if 'transaction_cost' not in self.config:
             adv = np.ones_like(prices) * 1e100
-            tc_model = PairTradingCatalog.create_instance(
+            tc_model = PairTradingCatalog.invoke(
                 name='transaction_cost_model',
                 open_prices=None,
                 high_prices=None,
@@ -109,7 +109,7 @@ class BacktestStep(AbstractStep):
                 close_prices * ohlcv.xs('Volume', level=1, axis=1)
             )
 
-            tc_model = PairTradingCatalog.create_instance(
+            tc_model = PairTradingCatalog.invoke(
                 name='transaction_cost_model',
                 open_prices=open_prices,
                 high_prices=high_prices,
