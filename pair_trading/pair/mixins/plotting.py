@@ -1,3 +1,5 @@
+import pandas as pd
+
 from pair_trading.plotting import (
     prices_plot as _prices_plot,
     scatter_plot as _scatter_plot,
@@ -90,8 +92,14 @@ class PlottingMixin:
             k: v for k, v in kwargs.items() if k not in equity_curve_kwargs
         }
 
+        backtester = self.equity_curve(period='all', **equity_curve_kwargs)
+        portfolio_value = pd.Series(
+            (backtester.holdings() * backtester.prices()).sum(axis=1),
+            index=self.price1.index,
+        )
+
         return _equity_curve_plot(
-            self.equity_curve(period='all', **equity_curve_kwargs),
+            portfolio_value,
             self.formation_start,
             self.formation_end,
             self.trading_start,

@@ -86,7 +86,7 @@ class Workflow(metaclass=PairTradingCatalog):
             period_trade_sources = [
                 trade | {'max_ratio_of_portfolio_value': max_ratio_of_portfolio_value}  # noqa: E501
                 for pair in selected_pairs
-                for trade in pair.get_trades_cpp(period="trading")
+                for trade in pair.get_trades(period="trading")
             ]
             trade_sources.append(period_trade_sources)
 

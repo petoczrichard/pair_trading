@@ -188,61 +188,6 @@ class AbstractPair(
 
         entries, exits = get_trade_dates_numba(positions_values, dates_ints)
 
-        trade_list = []
-        default_pair_info = {
-            "pair_id": self.id,
-            "name1": self.name1,
-            "name2": self.name2,
-            "hedge_ratio": self.hedge_ratio,
-        }
-        timestamp_multiplier = 1_000_000_000
-
-        for date in entries:
-            entry_date = pd.Timestamp(date * timestamp_multiplier)
-            trade_list.append({
-                "type": "entry",
-                "direction": (
-                    "long" if positions.loc[entry_date] == -1 else "short"
-                ),
-                "trade_date": entry_date,
-                **default_pair_info,
-            })
-        for date in exits:
-            trade_list.append({
-                "type": "exit",
-                "trade_date": pd.Timestamp(date * timestamp_multiplier),
-                **default_pair_info,
-            })
-
-        return trade_list
-
-    def get_trades_cpp(
-        self,
-        period: Literal['formation', 'trading', 'all'] = 'formation',
-        long_entry: float = -2,
-        long_exit: float = 0,
-        long_stoploss: float = -5,
-        short_entry: float = 2,
-        short_exit: float = 0,
-        short_stoploss: float = 5,
-    ):
-        positions = self.compute_positions(
-            period=period,
-            long_entry=long_entry,
-            long_exit=long_exit,
-            long_stoploss=long_stoploss,
-            short_entry=short_entry,
-            short_exit=short_exit,
-            short_stoploss=short_stoploss,
-        )
-        dates_ints = np.array(positions.index.map(pd.Timestamp.timestamp))
-        positions_values = positions.values
-        positions_values = roll_numba(positions_values, 1)
-        positions_values[0] = 0
-        positions_values[-1] = 0
-
-        entries, exits = get_trade_dates_numba(positions_values, dates_ints)
-
         trade_source_list = []
 
         weights = np.array([1, -self.hedge_ratio])
@@ -272,7 +217,7 @@ class AbstractPair(
 
         return trade_source_list
 
-    def equity_curve_cpp(
+    def equity_curve(
         self,
         period: Literal['formation', 'trading', 'all'] = 'formation',
         long_entry: float = -2,
@@ -294,7 +239,7 @@ class AbstractPair(
             market_impact=np.zeros_like(adv),
             adv=adv,
         )
-        trade_sources = self.get_trades_cpp(
+        trade_sources = self.get_trades(
             period=period,
             long_entry=long_entry,
             long_exit=long_exit,
@@ -335,149 +280,4 @@ class AbstractPair(
         )
         backtester.run()
 
-        # return pd.Series(
-        #     (backtester.holdings() * backtester.prices()).sum(axis=1),
-        #     index=prices.index,
-        # )
         return backtester
-
-    def equity_curve(
-        self,
-        period: Literal['formation', 'trading', 'all'] = 'formation',
-        long_entry: float = -2,
-        long_exit: float = 0,
-        long_stoploss: float = -5,
-        short_entry: float = 2,
-        short_exit: float = 0,
-        short_stoploss: float = 5,
-        initial_cash: float = 100.0,
-        leverage: float = 1.0,
-    ):
-        trades = self.get_trades(
-            period=period,
-            long_entry=long_entry,
-            long_exit=long_exit,
-            long_stoploss=long_stoploss,
-            short_entry=short_entry,
-            short_exit=short_exit,
-            short_stoploss=short_stoploss,
-        )
-        sorted_trades = sorted(
-            trades,
-            key=lambda trade: (
-                trade['trade_date'],
-                0 if trade['type'] == 'exit' else 1,
-            ),
-        )
-        trade_blotter = []
-        trade_mapping = {}
-        trade_counter = 0
-
-        portfolio_holdings = pd.DataFrame(
-            index=self.spread.index,
-            columns=['USD_CASH', self.name1, self.name2],
-        )
-        portfolio_holdings.iloc[0] = [initial_cash, 0, 0]
-
-        for i, date in enumerate(portfolio_holdings.index[1:], start=1):
-            portfolio_holdings.iloc[i] = portfolio_holdings.iloc[i - 1]
-
-            while sorted_trades and sorted_trades[0]['trade_date'] == date:
-                current_trade = sorted_trades.pop(0)
-
-                if current_trade['type'] == 'exit':
-                    pair_id = current_trade['pair_id']
-                    pair_entry = trade_mapping[pair_id]
-
-                    while pair_entry:
-                        trade_id = pair_entry.pop(0)
-                        trade = trade_blotter[trade_id]
-                        ticker = trade['ticker']
-                        amount = trade['amount']
-
-                        current_price = (
-                            self.price1
-                            if ticker == self.name1
-                            else self.price2
-                        )
-
-                        portfolio_holdings.loc[date, 'USD_CASH'] += (
-                            amount * current_price.loc[date]
-                        )
-                        portfolio_holdings.loc[date, ticker] -= amount
-
-                        trade_blotter.append({
-                            'trade_id': trade_counter,
-                            'date': date,
-                            'ticker': ticker,
-                            'amount': -amount,
-                            'pair': self.name,
-                            'formation_start': self.formation_start,
-                        })
-                        trade_counter += 1
-
-                    if len(trade_mapping[pair_id]) == 0:
-                        del trade_mapping[pair_id]
-
-                if current_trade['type'] == 'entry':
-                    pair_id = current_trade['pair_id']
-
-                    direction = (
-                        -1 if current_trade['direction'] == 'long' else 1
-                    )
-                    pair_amount = (
-                        (portfolio_holdings.loc[date, 'USD_CASH'] * leverage)
-                        / (
-                            self.price1.loc[date]
-                            + abs(self.hedge_ratio) * self.price2.loc[date]
-                        )
-                    )
-
-                    portfolio_holdings.loc[date, self.name1] = (
-                        direction * pair_amount
-                    )
-                    portfolio_holdings.loc[date, 'USD_CASH'] += (
-                        - direction * self.price1.loc[date] * pair_amount
-                    )
-
-                    trade_blotter.append({
-                        'trade_id': trade_counter,
-                        'date': date,
-                        'ticker': self.name1,
-                        'amount': direction * pair_amount,
-                        'pair': self.name,
-                        'formation_start': self.formation_start,
-                    })
-                    trade_mapping.setdefault(pair_id, []).append(trade_counter)
-                    trade_counter += 1
-
-                    portfolio_holdings.loc[date, self.name2] = (
-                        -direction * self.hedge_ratio * pair_amount
-                    )
-                    portfolio_holdings.loc[date, 'USD_CASH'] += (
-                        direction * self.price2.loc[date]
-                        * self.hedge_ratio * pair_amount
-                    )
-
-                    trade_blotter.append({
-                        'trade_id': trade_counter,
-                        'date': date,
-                        'ticker': self.name2,
-                        'amount': -direction * self.hedge_ratio * pair_amount,
-                        'pair': self.name,
-                        'formation_start': self.formation_start,
-                    })
-                    trade_mapping.setdefault(pair_id, []).append(trade_counter)
-                    trade_counter += 1
-
-        portfolio_prices = pd.concat(
-            [
-                pd.Series(1, index=self.price1.index, name='USD_CASH'),
-                self.price1,
-                self.price2,
-            ],
-            axis=1,
-        )
-        portfolio_value = (portfolio_holdings * portfolio_prices).sum(axis=1)
-
-        return portfolio_value
