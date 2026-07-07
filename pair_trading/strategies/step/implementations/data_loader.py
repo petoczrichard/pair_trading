@@ -8,7 +8,8 @@ class DataLoaderStep(AbstractStep):
 
     def run(self):
         data_loader = PairTradingCatalog.invoke(
-            **self.config['setup']
+            category='data_loader',
+            **self.config['setup'],
         )
         tickers = data_loader.get_tickers(
             **(self.config.get('get_tickers') or {})

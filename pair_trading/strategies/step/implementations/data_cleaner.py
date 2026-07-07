@@ -25,19 +25,20 @@ class DataCleanerStep(AbstractStep):
         currency_volume = volumes * (1 if is_crypto else prices)
 
         data_cleaner = PairTradingCatalog.invoke(
+            category='data_cleaner',
             **self.config['setup'],
         )
 
         filtered_metadata = data_cleaner.clean_tickers(
             metadata=metadata,
             currency_volume=currency_volume,
-            **(self.config['clean_tickers'] or {}),
+            **(self.config.get('clean_tickers') or {}),
         )
 
         filtered_prices = data_cleaner.clean_prices(
             prices=prices[filtered_metadata.index.tolist()],
             volumes=currency_volume[filtered_metadata.index.tolist()],
-            **(self.config['clean_prices'] or {}),
+            **(self.config.get('clean_prices') or {}),
         )
 
         if 'remove_negative_prices' in self.config:

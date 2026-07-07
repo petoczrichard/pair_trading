@@ -8,6 +8,7 @@ class GrouperStep(AbstractStep):
 
     def run(self, prices, metadata, formation_start, formation_end):
         grouper = PairTradingCatalog.invoke(
+            category='grouper',
             **self.config['setup'],
         )
 
