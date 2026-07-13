@@ -1,28 +1,13 @@
-from concurrent.futures import ProcessPoolExecutor
-import os
-import math
+import itertools
 import numpy as np
 
 from pair_trading.catalog import PairTradingCatalog
 from pair_trading.utils import filter_allowed_kwargs
 
 
-def _calculate_pair_chunk_worker(args):
-    pairs, kwargs = args
-
-    for pair in pairs:
-        pair.calculate(**kwargs)
-
-    return pairs
-
-
-def chunked(seq, n_chunks):
-    chunk_size = math.ceil(len(seq) / n_chunks)
-
-    return [
-        seq[i:i + chunk_size]
-        for i in range(0, len(seq), chunk_size)
-    ]
+def _calculate_pair_worker(pair, kwargs):
+    pair.calculate(**kwargs)
+    return pair
 
 
 class PairSelection(metaclass=PairTradingCatalog):
@@ -56,31 +41,22 @@ class PairSelection(metaclass=PairTradingCatalog):
 
     def calculate_pairs(
         self,
-        multiprocess_n_jobs=...,
+        pool=None,
         **kwargs,
     ):
-        multiprocess_n_jobs = multiprocess_n_jobs or max(1, os.cpu_count() - 1)
-        if multiprocess_n_jobs is ... or multiprocess_n_jobs == 1:
+        if pool is None:
             for pair in self.pairs:
                 pair.calculate(**kwargs)
             return
 
-        with ProcessPoolExecutor(max_workers=multiprocess_n_jobs) as executor:
-            results = executor.map(
-                _calculate_pair_chunk_worker,
-                [
-                    (chunk, kwargs)
-                    for chunk
-                    in chunked(self.pairs, multiprocess_n_jobs)
-                ],
+        self.pairs = list(
+            pool.map(
+                _calculate_pair_worker,
+                self.pairs,
+                itertools.repeat(kwargs),
+                chunksize=100,
             )
-
-        self.pairs = [
-            pair
-            for chunk in results
-            for pair in chunk
-        ]
-
+        )
 
     def filter_pairs(
         self,
