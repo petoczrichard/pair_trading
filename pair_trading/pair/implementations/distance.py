@@ -10,7 +10,7 @@ class DistancePair(AbstractPair):
         start_price2 = self.price2_values[0]
 
         self.hedge_ratio = start_price1 / start_price2
-        self.spread = self.create_spread()
+        self.create_spread()
 
         if zero_mean:
             self.spread_mean = 0

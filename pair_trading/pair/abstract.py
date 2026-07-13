@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Literal, overload
 import pandas as pd
 import numpy as np
 
@@ -7,19 +7,19 @@ from pair_trading.pair.mixins.metrics import MetricsMixin
 from pair_trading.pair.mixins.plotting import PlottingMixin
 from pair_trading.catalog import PairTradingMeta
 from pair_trading.transaction_cost_model import TransactionCostModel
-from pair_trading.numba.backtest import (
+from pair_trading.numba_helpers.backtest import (
     compute_positions as numba_compute_positions,
     get_trade_dates as get_trade_dates_numba,
 )
-from pair_trading.numba.metrics import (
+from pair_trading.numba_helpers.metrics import (
     ssd as numba_ssd,
 )
-from pair_trading.numba.statistical import (
+from pair_trading.numba_helpers.statistical import (
     numba_mean,
     numba_std,
     numba_create_spread,
 )
-from pair_trading.numba.linalg import roll_numba
+from pair_trading.numba_helpers.linalg import roll_numba
 
 from trading_core import (
     TradeType,
@@ -39,6 +39,7 @@ class AbstractPair(
 
     alias = 'pair'
 
+    @overload
     def __init__(
         self,
         price1,
@@ -48,30 +49,68 @@ class AbstractPair(
         trading_start,
         trading_end,
     ):
-        self.price1 = price1
-        self.price2 = price2
-        self.price1_values = price1.values
-        self.price2_values = price2.values
+        ...
 
-        self.name1 = price1.name
-        self.name2 = price2.name
-        self.name = self.name1 + '-' + self.name2
+    @overload
+    def __init__(
+        self,
+        name1,
+        name2,
+        price1_values,
+        price2_values,
+        index_values,
+        formation_start_index,
+        formation_end_index,
+        trading_start_index,
+        trading_end_index,
+    ):
+        ...
 
-        self.formation_start = pd.Timestamp(formation_start)
-        self.formation_end = pd.Timestamp(formation_end)
-        self.trading_start = pd.Timestamp(trading_start)
-        self.trading_end = pd.Timestamp(trading_end)
+    def __init__(
+        self,
+        price1=None,
+        price2=None,
+        formation_start=None,
+        formation_end=None,
+        trading_start=None,
+        trading_end=None,
+        name1=None,
+        name2=None,
+        price1_values=None,
+        price2_values=None,
+        index_values=None,
+        formation_start_index=None,
+        formation_end_index=None,
+        trading_start_index=None,
+        trading_end_index=None,
+    ):
+        if price1 is not None and price2 is not None:
+            self._pandas_init(
+                price1=price1,
+                price2=price2,
+                formation_start=formation_start,
+                formation_end=formation_end,
+                trading_start=trading_start,
+                trading_end=trading_end,
+            )
 
-        self.id = self.name + '_' + str(self.formation_start)
+        elif price1_values is not None and price2_values is not None:
+            self._numpy_init(
+                name1=name1,
+                name2=name2,
+                price1_values=price1_values,
+                price2_values=price2_values,
+                index_values=index_values,
+                formation_start_index=formation_start_index,
+                formation_end_index=formation_end_index,
+                trading_start_index=trading_start_index,
+                trading_end_index=trading_end_index,
+            )
 
-        price_index = price1.index
-        self.formation_start_index = price_index.searchsorted(formation_start)
-        self.formation_end_index = price_index.searchsorted(formation_end) + 1
-        self.trading_start_index = price_index.searchsorted(trading_start)
-        self.trading_end_index = price_index.searchsorted(trading_end) + 1
-
-        self.formation_period = slice(self.formation_start, self.formation_end)
-        self.trading_period = slice(self.trading_start, self.trading_end)
+        else:
+            raise ValueError(
+                "Initialize pair either through pandas or numpy route."
+            )
 
         self.formation_period_index = slice(
             self.formation_start_index,
@@ -83,9 +122,133 @@ class AbstractPair(
         )
 
         self.hedge_ratio = None
-        self.spread = None
+        self.spread_values = None
         self.spread_mean = None
         self.spread_std = None
+
+    def _pandas_init(
+        self,
+        price1,
+        price2,
+        formation_start,
+        formation_end,
+        trading_start,
+        trading_end,
+    ):
+        self.name1 = price1.name
+        self.name2 = price2.name
+        self.price1_values = price1.values
+        self.price2_values = price2.values
+
+        pandas_index = price1.index
+        self.index_values = (
+            pandas_index
+                .values
+                .astype("datetime64[ms]")
+                .astype(np.int64)
+        )
+
+        self.formation_start_index = pandas_index.searchsorted(
+            pd.Timestamp(formation_start)
+        )
+        self.formation_end_index = pandas_index.searchsorted(
+            pd.Timestamp(formation_end)
+        ) + 1
+        self.trading_start_index = pandas_index.searchsorted(
+            pd.Timestamp(trading_start)
+        )
+        self.trading_end_index = pandas_index.searchsorted(
+            pd.Timestamp(trading_end)
+        ) + 1
+
+    def _numpy_init(
+        self,
+        name1,
+        name2,
+        price1_values,
+        price2_values,
+        index_values,
+        formation_start_index,
+        formation_end_index,
+        trading_start_index,
+        trading_end_index,
+    ):
+        self.name1 = name1
+        self.name2 = name2
+        self.price1_values = price1_values
+        self.price2_values = price2_values
+
+        self.index_values = index_values
+        self.formation_start_index = formation_start_index
+        self.formation_end_index = formation_end_index
+        self.trading_start_index = trading_start_index
+        self.trading_end_index = trading_end_index
+
+    @property
+    def formation_start(self):
+        loc = self.formation_start_index
+        return self.index_values[loc].astype("datetime64[ms]")
+
+    @property
+    def formation_end(self):
+        loc = self.formation_end_index - 1
+        return self.index_values[loc].astype("datetime64[ms]")
+
+
+    @property
+    def trading_start(self):
+        loc = self.trading_start_index
+        return self.index_values[loc].astype("datetime64[ms]")
+
+    @property
+    def trading_end(self):
+        loc = self.trading_end_index - 1
+        return self.index_values[loc].astype("datetime64[ms]")
+
+    @property
+    def formation_period(self):
+        return slice(
+            self.formation_start,
+            self.formation_end,
+        )
+
+    @property
+    def trading_period(self):
+        return slice(
+            self.trading_start,
+            self.trading_end,
+        )
+
+    @property
+    def price1(self):
+        return pd.Series(
+            data=self.price1_values,
+            index=self.index_values.astype("datetime64[ms]"),
+            name=self.name1,
+        )
+
+    @property
+    def price2(self):
+        return pd.Series(
+            data=self.price2_values,
+            index=self.index_values.astype("datetime64[ms]"),
+            name=self.name2,
+        )
+
+    @property
+    def spread(self):
+        return pd.Series(
+            data=self.spread_values,
+            index=self.index_values.astype("datetime64[ms]"),
+        )
+
+    @property
+    def name(self):
+        return self.name1 + '-' + self.name2
+
+    @property
+    def id(self):
+        return self.name + '_' + str(self.formation_start)
 
     @abstractmethod
     def calculate(self):
@@ -101,21 +264,15 @@ class AbstractPair(
         if self.hedge_ratio is None:
             raise ValueError("Hedge ratio not calculated yet.")
 
-        self.spread = pd.Series(
-            numba_create_spread(
-                self.price1_values,
-                self.price2_values,
-                self.hedge_ratio
-            ),
-            index=self.price1.index,
+        self.spread_values = numba_create_spread(
+            self.price1_values,
+            self.price2_values,
+            self.hedge_ratio
         )
-        self.spread_values = self.spread.values
 
         formation_spread = self.spread_values[self.formation_period_index]
         self.spread_mean = numba_mean(formation_spread)
         self.spread_std = numba_std(formation_spread, ddof=1)
-
-        return self.spread
 
     def calculate_ssd(self):
         return numba_ssd(

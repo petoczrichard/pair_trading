@@ -1,8 +1,8 @@
 import numpy as np
 from numba import njit
 
-from pair_trading.numba.chi2 import chi2_cdf_scalar
-from pair_trading.numba.statistical import numba_mean
+from pair_trading.numba_helpers.chi2 import chi2_cdf_scalar
+from pair_trading.numba_helpers.statistical import numba_mean
 
 
 @njit(fastmath=True, nogil=True, boundscheck=False, cache=True)

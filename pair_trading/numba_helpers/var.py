@@ -3,7 +3,7 @@ import math
 import numpy as np
 from numba import njit
 
-from pair_trading.numba.linalg import slogdet_numba, lstsq_numba
+from pair_trading.numba_helpers.linalg import slogdet_numba, lstsq_numba
 
 
 TREND_MAP = {

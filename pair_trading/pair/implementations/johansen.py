@@ -3,8 +3,8 @@ import numpy as np
 from statsmodels.tsa.vector_ar.vecm import coint_johansen
 
 from pair_trading.pair.abstract import AbstractPair
-from pair_trading.numba.var import var
-from pair_trading.numba.ljung_box import ljung_box
+from pair_trading.numba_helpers.var import var
+from pair_trading.numba_helpers.ljung_box import ljung_box
 
 
 SIG_TO_COL = {
@@ -44,7 +44,7 @@ class JohansenPair(AbstractPair):
 
         beta = self.johansen_result.evec[:, 0]
         self.hedge_ratio = -beta[1] / beta[0]
-        self.spread = self.create_spread()
+        self.create_spread()
 
         return self
 

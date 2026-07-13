@@ -1,5 +1,5 @@
-from pair_trading.numba.statistical import rma_regression
-from pair_trading.numba.adf import adf
+from pair_trading.numba_helpers.statistical import rma_regression
+from pair_trading.numba_helpers.adf import adf
 from pair_trading.pair.abstract import AbstractPair
 
 
@@ -23,7 +23,7 @@ class EngleGrangerPair(AbstractPair):
             y=price2,
         )
         self.hedge_ratio = 1 / slope
-        self.spread = self.create_spread()
+        self.create_spread()
         self.spread_adf_pvalue = adf(
             self.spread_values[self.formation_period_index]
         )[1]

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from pair_trading.numba.adf import adf
+from pair_trading.numba_helpers.adf import adf
 from pair_trading.catalog import PairTradingMeta
 
 

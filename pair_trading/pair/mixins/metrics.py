@@ -1,13 +1,13 @@
 import numpy as np
 
-from pair_trading.numba.metrics import (
+from pair_trading.numba_helpers.metrics import (
     half_life as numba_half_life,
     number_of_trades as numba_number_of_trades,
     number_of_zero_crossings as numba_number_of_zero_crossings,
     average_round_trip_length as numba_average_round_trip_length,
 )
-from pair_trading.numba.statistical import pearson_correlation
-from pair_trading.numba.backtest import compute_positions
+from pair_trading.numba_helpers.statistical import pearson_correlation
+from pair_trading.numba_helpers.backtest import compute_positions
 
 
 class MetricsMixin:

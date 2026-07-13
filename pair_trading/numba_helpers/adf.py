@@ -5,7 +5,7 @@ import pandas as pd
 from numba import njit
 from statsmodels.tsa.stattools import mackinnonp
 
-from pair_trading.numba.linalg import solve_numba, invert_numba, diff_numba
+from pair_trading.numba_helpers.linalg import solve_numba, invert_numba, diff_numba
 
 
 TREND_MAP = {
