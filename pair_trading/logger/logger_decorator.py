@@ -43,7 +43,6 @@ def _format_arguments(arguments, formatter):
 
 def logger_decorator(
     input_formatter=None,
-    output_names=None,
     output_formatter=None,
 ):
     input_formatter = input_formatter or {}
@@ -60,22 +59,24 @@ def logger_decorator(
                 _format_arguments(bound.arguments, input_formatter)
             )
 
-            start = time.perf_counter()
+            start_time = time.perf_counter()
             try:
                 output = func(*args, **kwargs)
             except Exception:
                 logger.exception(
                     "%.3fs - FAIL - %s(%s)",
-                    time.perf_counter() - start,
+                    time.perf_counter() - start_time,
                     func.__qualname__,
                     call_signature,
                 )
                 raise
 
-            if output_names is None and output_formatter is None:
+            end_time = time.perf_counter()
+
+            if output_formatter is None:
                 logger.info(
                     "%.3fs - %s(%s)",
-                    time.perf_counter() - start,
+                    end_time - start_time,
                     func.__qualname__,
                     call_signature,
                 )
@@ -87,9 +88,9 @@ def logger_decorator(
                     else (output,)
                 )
                 output_dict = {
-                    key: value
-                    for key, value
-                    in zip(output_names, tuple_output)
+                    output_key: output_value
+                    for output_key, output_value
+                    in zip(output_formatter.keys(), tuple_output)
                 }
                 output_string = ', '.join(
                     _format_arguments(output_dict, output_formatter)
@@ -97,7 +98,7 @@ def logger_decorator(
 
                 logger.info(
                     "%.3fs - %s(%s) -> %s",
-                    time.perf_counter() - start,
+                    end_time - start_time,
                     func.__qualname__,
                     call_signature,
                     output_string,

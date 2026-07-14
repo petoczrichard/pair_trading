@@ -12,7 +12,6 @@ class DataCleanerStep(AbstractStep):
             'metadata': ('shape',),
             'ohlcv': ('shape',),
         },
-        output_names=('filtered_metadata', 'filtered_prices'),
         output_formatter={
             'filtered_metadata': ('shape',),
             'filtered_prices': ('shape',),

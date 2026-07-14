@@ -12,7 +12,6 @@ class GrouperStep(AbstractStep):
             'prices': ('shape',),
             'metadata': ('shape',),
         },
-        output_names=('pair_names',),
         output_formatter={
             'pair_names': ('__len__',),
         },

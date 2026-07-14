@@ -8,7 +8,6 @@ class DataLoaderStep(AbstractStep):
     alias = 'data_loader'
 
     @logger_decorator(
-        output_names=('metadata', 'ohlcv'),
         output_formatter={
             'metadata': ('shape',),
             'ohlcv': ('shape',),
