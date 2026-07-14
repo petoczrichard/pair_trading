@@ -1,4 +1,5 @@
 import itertools
+from math import ceil
 import numpy as np
 import pandas as pd
 
@@ -84,7 +85,7 @@ class PairSelection(metaclass=PairTradingCatalog):
                 _calculate_pair_worker,
                 self.pairs,
                 itertools.repeat(kwargs),
-                chunksize=100,
+                chunksize=ceil(len(self.pairs) / pool._max_workers),
             )
         )
 
