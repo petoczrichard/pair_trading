@@ -1,12 +1,18 @@
 from pair_trading.strategies.step.abstract import AbstractStep
 from pair_trading.catalog import PairTradingCatalog
 from pair_trading.utils import date_offset
+from pair_trading.logger import logger_decorator
 
 
 class PeriodStep(AbstractStep):
 
     alias = 'period'
 
+    @logger_decorator(
+        formatter={
+            'ohlcv': ('shape',),
+        }
+    )
     def run(self, ohlcv):
         first_formation_start = self.config['period_start']
         first_formation_end = date_offset(

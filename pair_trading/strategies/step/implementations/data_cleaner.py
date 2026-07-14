@@ -1,11 +1,18 @@
 from pair_trading.strategies.step.abstract import AbstractStep
 from pair_trading.catalog import PairTradingCatalog
+from pair_trading.logger import logger_decorator
 
 
 class DataCleanerStep(AbstractStep):
 
     alias = 'data_cleaner'
 
+    @logger_decorator(
+        formatter={
+            'metadata': ('shape',),
+            'ohlcv': ('shape',),
+        }
+    )
     def run(
         self,
         metadata,

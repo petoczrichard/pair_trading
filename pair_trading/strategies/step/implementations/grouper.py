@@ -1,11 +1,18 @@
 from pair_trading.strategies.step.abstract import AbstractStep
 from pair_trading.catalog import PairTradingCatalog
+from pair_trading.logger import logger_decorator
 
 
 class GrouperStep(AbstractStep):
 
     alias = 'grouper'
 
+    @logger_decorator(
+        formatter={
+            'prices': ('shape',),
+            'metadata': ('shape',),
+        }
+    )
     def run(self, prices, metadata, formation_start, formation_end):
         grouper = PairTradingCatalog.invoke(
             category='grouper',
@@ -24,4 +31,4 @@ class GrouperStep(AbstractStep):
             **(self.config['create_groups'] or {}),
         )
 
-        return grouper.create_pairs(groups=groups)
+        return list(grouper.create_pairs(groups=groups))

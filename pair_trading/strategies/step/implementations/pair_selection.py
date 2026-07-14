@@ -3,6 +3,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 from pair_trading.strategies.step.abstract import AbstractStep
 from pair_trading.catalog import PairTradingCatalog
+from pair_trading.logger import logger_decorator
 
 
 class PairSelectionStep(AbstractStep):
@@ -21,6 +22,12 @@ class PairSelectionStep(AbstractStep):
             else None
         )
 
+    @logger_decorator(
+        formatter={
+            'pair_names': ('__len__',),
+            'prices': ('shape',),
+        }
+    )
     def run(
         self,
         pair_names,

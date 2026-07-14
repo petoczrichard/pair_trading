@@ -1,11 +1,13 @@
 from pair_trading.strategies.step.abstract import AbstractStep
 from pair_trading.catalog import PairTradingCatalog
+from pair_trading.logger import logger_decorator
 
 
 class DataLoaderStep(AbstractStep):
 
     alias = 'data_loader'
 
+    @logger_decorator()
     def run(self):
         data_loader = PairTradingCatalog.invoke(
             category='data_loader',
