@@ -8,10 +8,15 @@ class DataCleanerStep(AbstractStep):
     alias = 'data_cleaner'
 
     @logger_decorator(
-        formatter={
+        input_formatter={
             'metadata': ('shape',),
             'ohlcv': ('shape',),
-        }
+        },
+        output_names=('filtered_metadata', 'filtered_prices'),
+        output_formatter={
+            'filtered_metadata': ('shape',),
+            'filtered_prices': ('shape',),
+        },
     )
     def run(
         self,

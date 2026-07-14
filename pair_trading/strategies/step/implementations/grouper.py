@@ -8,10 +8,14 @@ class GrouperStep(AbstractStep):
     alias = 'grouper'
 
     @logger_decorator(
-        formatter={
+        input_formatter={
             'prices': ('shape',),
             'metadata': ('shape',),
-        }
+        },
+        output_names=('pair_names',),
+        output_formatter={
+            'pair_names': ('__len__',),
+        },
     )
     def run(self, prices, metadata, formation_start, formation_end):
         grouper = PairTradingCatalog.invoke(

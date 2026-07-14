@@ -23,10 +23,14 @@ class PairSelectionStep(AbstractStep):
         )
 
     @logger_decorator(
-        formatter={
+        input_formatter={
             'pair_names': ('__len__',),
             'prices': ('shape',),
-        }
+        },
+        output_names=('filtered_pairs',),
+        output_formatter={
+            'filtered_pairs': ('__len__',),
+        },
     )
     def run(
         self,

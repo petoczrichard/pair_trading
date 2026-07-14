@@ -7,7 +7,13 @@ class DataLoaderStep(AbstractStep):
 
     alias = 'data_loader'
 
-    @logger_decorator()
+    @logger_decorator(
+        output_names=('metadata', 'ohlcv'),
+        output_formatter={
+            'metadata': ('shape',),
+            'ohlcv': ('shape',),
+        },
+    )
     def run(self):
         data_loader = PairTradingCatalog.invoke(
             category='data_loader',

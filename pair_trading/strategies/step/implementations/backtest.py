@@ -13,10 +13,10 @@ class BacktestStep(AbstractStep):
     alias = 'backtest'
 
     @logger_decorator(
-        formatter={
+        input_formatter={
             'ohlcv': ('shape',),
             'trade_sources': ('__len__',),
-        }
+        },
     )
     def run(
         self,

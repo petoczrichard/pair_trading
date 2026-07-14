@@ -9,9 +9,9 @@ class PeriodStep(AbstractStep):
     alias = 'period'
 
     @logger_decorator(
-        formatter={
+        input_formatter={
             'ohlcv': ('shape',),
-        }
+        },
     )
     def run(self, ohlcv):
         first_formation_start = self.config['period_start']

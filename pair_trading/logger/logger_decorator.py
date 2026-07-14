@@ -17,8 +17,8 @@ def _resolve_dunder(name, property_name, value):
     return f"{property_name[2:-2]}({name})={value}"
 
 
-def _format_arguments(bound_signature, formatter):
-    for argument_name, value in bound_signature.arguments.items():
+def _format_arguments(arguments, formatter):
+    for argument_name, value in arguments.items():
 
         if argument_name in ARGUMENTS_TO_SKIP:
             continue
@@ -41,8 +41,12 @@ def _format_arguments(bound_signature, formatter):
                 yield f"{argument_name}.{property_name}={property_value}"
 
 
-def logger_decorator(formatter=None):
-    formatter = formatter or {}
+def logger_decorator(
+    input_formatter=None,
+    output_names=None,
+    output_formatter=None,
+):
+    input_formatter = input_formatter or {}
 
     def decorator(func):
         signature = inspect.signature(func)
@@ -52,11 +56,13 @@ def logger_decorator(formatter=None):
             bound = signature.bind(*args, **kwargs)
             bound.apply_defaults()
 
-            call_signature = ", ".join(_format_arguments(bound, formatter))
+            call_signature = ", ".join(
+                _format_arguments(bound.arguments, input_formatter)
+            )
 
             start = time.perf_counter()
             try:
-                result = func(*args, **kwargs)
+                output = func(*args, **kwargs)
             except Exception:
                 logger.exception(
                     "%.3fs - FAIL - %s(%s)",
@@ -66,13 +72,37 @@ def logger_decorator(formatter=None):
                 )
                 raise
 
-            logger.info(
-                "%.3fs - SUCCESS - %s(%s)",
-                time.perf_counter() - start,
-                func.__qualname__,
-                call_signature,
-            )
+            if output_names is None and output_formatter is None:
+                logger.info(
+                    "%.3fs - %s(%s)",
+                    time.perf_counter() - start,
+                    func.__qualname__,
+                    call_signature,
+                )
 
-            return result
+            else:
+                tuple_output = (
+                    output
+                    if isinstance(output, tuple)
+                    else (output,)
+                )
+                output_dict = {
+                    key: value
+                    for key, value
+                    in zip(output_names, tuple_output)
+                }
+                output_string = ', '.join(
+                    _format_arguments(output_dict, output_formatter)
+                )
+
+                logger.info(
+                    "%.3fs - %s(%s) -> %s",
+                    time.perf_counter() - start,
+                    func.__qualname__,
+                    call_signature,
+                    output_string,
+                )
+
+            return output
         return wrapper
     return decorator
