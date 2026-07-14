@@ -73,7 +73,5 @@ def logger_decorator(formatter=None):
             )
 
             return result
-
         return wrapper
-
     return decorator

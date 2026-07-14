@@ -1,5 +1,5 @@
 from pair_trading.strategies.step.abstract import AbstractStep
-from pair_trading.logger import logger_decorator
+from pair_trading.logger.logger_decorator import logger_decorator
 
 
 class NullStep(AbstractStep):
