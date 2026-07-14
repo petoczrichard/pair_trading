@@ -18,11 +18,12 @@ def _resolve_dunder(name, property_name, value):
 
 
 def _format_arguments(bound_signature, formatter):
-    for arguemnt_name, value in bound_signature.arguments.items():
-        if arguemnt_name in ARGUMENTS_TO_SKIP:
+    for argument_name, value in bound_signature.arguments.items():
+
+        if argument_name in ARGUMENTS_TO_SKIP:
             continue
 
-        property_names = formatter.get(arguemnt_name, DEFAULT_PROPERTIES)
+        property_names = formatter.get(argument_name, DEFAULT_PROPERTIES)
 
         for property_name in property_names:
             property_value = getattr(value, property_name)
@@ -32,12 +33,12 @@ def _format_arguments(bound_signature, formatter):
 
             if property_name.startswith("__") and property_name.endswith("__"):
                 yield _resolve_dunder(
-                    arguemnt_name,
+                    argument_name,
                     property_name,
                     property_value,
                 )
             else:
-                yield f"{arguemnt_name}.{property_name}={property_value}"
+                yield f"{argument_name}.{property_name}={property_value}"
 
 
 def logger_decorator(formatter=None):
