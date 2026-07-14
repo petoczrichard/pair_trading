@@ -1,9 +1,3 @@
-"""
-trading engine
-transonction cost model interfaces
-portfolio analyser calc
-"""
-
 import numpy as np
 from numba import njit
 

@@ -99,9 +99,6 @@ def adf(
     max_lags: int = None,
     method: Literal['aic', 'bic'] = 'aic',
 ):
-    """
-    Augmented Dickey-Fuller test (fixed lag version, from scratch).
-    """
     gamma_idx = TREND_MAP[trend]
 
     if lags is not None:

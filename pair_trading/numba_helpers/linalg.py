@@ -57,12 +57,6 @@ def diff_numba(x):
 
 @njit(boundscheck=False, cache=True)
 def cholesky_numba(A):
-    """
-    Lower-triangular Cholesky decomposition:
-    A = L @ L.T
-    A must be symmetric positive definite.
-    """
-
     n = A.shape[0]
     L = np.zeros_like(A)
 
@@ -177,14 +171,6 @@ def slogdet_numba(A):
 
 @njit(fastmath=True, cache=True)
 def lstsq_numba(X, Y):
-    """
-    Solve min ||X B - Y|| using QR decomposition.
-
-    X: (n, k)
-    Y: (n, m)
-    Returns:
-        B: (k, m)
-    """
     n, k = X.shape
     _, m = Y.shape
 
