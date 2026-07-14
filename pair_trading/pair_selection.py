@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+import pandas as pd
 
 from pair_trading.catalog import PairTradingCatalog
 from pair_trading.utils import filter_allowed_kwargs
@@ -24,16 +25,45 @@ class PairSelection(metaclass=PairTradingCatalog):
         trading_start,
         trading_end,
     ):
+        name_to_index = {
+            name: index for index, name in enumerate(prices.columns)
+        }
+        price_values = prices.values
+
+        pandas_index = prices.index
+        index_values = (
+            pandas_index
+                .values
+                .astype("datetime64[ms]")
+                .astype(np.int64)
+        )
+
+        formation_start_index = pandas_index.searchsorted(
+            pd.Timestamp(formation_start)
+        )
+        formation_end_index = pandas_index.searchsorted(
+            pd.Timestamp(formation_end)
+        ) + 1
+        trading_start_index = pandas_index.searchsorted(
+            pd.Timestamp(trading_start)
+        )
+        trading_end_index = pandas_index.searchsorted(
+            pd.Timestamp(trading_end)
+        ) + 1
+
         self.pairs = [
             PairTradingCatalog.invoke(
                 category='pair',
                 variant=pair_type,
-                price1=prices[name1],
-                price2=prices[name2],
-                formation_start=formation_start,
-                formation_end=formation_end,
-                trading_start=trading_start,
-                trading_end=trading_end,
+                name1=name1,
+                name2=name2,
+                price1_values=price_values[:, name_to_index[name1]],
+                price2_values=price_values[:, name_to_index[name2]],
+                index_values=index_values,
+                formation_start_index=formation_start_index,
+                formation_end_index=formation_end_index,
+                trading_start_index=trading_start_index,
+                trading_end_index=trading_end_index,
             )
             for name1, name2
             in pair_names
