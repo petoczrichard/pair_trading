@@ -1,8 +1,10 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/optional.h>
 #include <nanobind/eigen/dense.h>
+#include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
+#include <sstream>
 #include <vector>
 
 #include "backtester/trade.hpp"
@@ -13,6 +15,13 @@
 
 namespace nb = nanobind;
 
+template <typename T>
+std::string repr(const T& value) {
+    std::ostringstream os;
+    os << value;
+    return os.str();
+}
+
 
 NB_MODULE(trading_core, m) {
     nb::class_<Trade>(m, "Trade")
@@ -21,7 +30,8 @@ NB_MODULE(trading_core, m) {
         .def_rw("source_id", &Trade::source_id)
         .def_rw("ticker", &Trade::ticker)
         .def_rw("date", &Trade::date)
-        .def_rw("amount", &Trade::amount);
+        .def_rw("amount", &Trade::amount)
+        .def("__repr__", &repr<Trade>);
 
     nb::enum_<TradeType>(m, "TradeType")
         .value("Entry", TradeType::Entry)
@@ -44,7 +54,8 @@ NB_MODULE(trading_core, m) {
         )
         .def_rw("asset_ids", &Basket::asset_ids)
         .def_rw("weights", &Basket::weights)
-        .def_rw("weight_type", &Basket::weight_type);
+        .def_rw("weight_type", &Basket::weight_type)
+        .def("__repr__", &repr<Basket>);
 
     nb::class_<TradeSource>(m, "TradeSource")
         .def(
@@ -71,6 +82,7 @@ NB_MODULE(trading_core, m) {
                 &TradeSource::max_adv_participation_rate)
         .def_rw("max_ratio_of_portfolio_value",
                 &TradeSource::max_ratio_of_portfolio_value)
+        .def("__repr__", &repr<TradeSource>)
         .def(
             "shares_to_buy",
             [](TradeSource& self,
