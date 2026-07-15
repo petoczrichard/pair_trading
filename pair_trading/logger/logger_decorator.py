@@ -85,6 +85,7 @@ def logger_decorator(
                 tuple_output = (
                     output
                     if isinstance(output, tuple)
+                    and len(output) == len(output_formatter)
                     else (output,)
                 )
                 output_dict = {

@@ -1,6 +1,6 @@
+from pathlib import Path
 import logging
 import yaml
-from pathlib import Path
 
 
 ROOT_FILENAME = Path(__file__).parent / "configs"
