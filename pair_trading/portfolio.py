@@ -3,7 +3,15 @@ import pandas as pd
 
 
 class Portfolio:
-    def __init__(self, backtester, index, columns):
+    def __init__(
+        self,
+        backtester,
+        index,
+        columns,
+        source_id_to_index,
+        ticker_to_index,
+        date_to_index,
+    ):
         self.holdings = pd.DataFrame(
             backtester.holdings(),
             index=index,
@@ -19,6 +27,10 @@ class Portfolio:
                 .sum(axis=1)
                 .rename('portfolio')
         )
+
+        self.source_id_to_index=source_id_to_index,
+        self.ticker_to_index=ticker_to_index,
+        self.date_to_index=date_to_index,
 
     def contributions(
         self,

@@ -42,9 +42,7 @@ class BacktestStep(AbstractStep):
             list(backtest_tickers),
         ]
 
-        prices = ohlcv.xs('Close', level=1, axis=1)
-        prices = prices.ffill()
-        prices = prices.fillna(0)
+        prices = ohlcv.xs('Close', level=1, axis=1).ffill().fillna(0)
 
         source_id_to_index = {
             source_id: index
@@ -172,4 +170,7 @@ class BacktestStep(AbstractStep):
             backtester=backtester,
             index=prices.index,
             columns=prices.columns.tolist() + cash_and_transaction_cost_fields,
+            source_id_to_index=source_id_to_index,
+            ticker_to_index=ticker_to_index,
+            date_to_index=date_to_index,
         )

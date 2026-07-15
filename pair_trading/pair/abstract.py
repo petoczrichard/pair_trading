@@ -386,7 +386,27 @@ class AbstractPair(
         initial_cash: float = 100.0,
         leverage: float = 1.0,
     ):
-        prices = pd.concat([self.price1, self.price2], axis=1)
+        if period == 'formation':
+            period_slice = self.formation_period
+        elif period == 'trading':
+            period_slice = self.trading_period
+        elif period == 'all':
+            period_slice = slice(
+                self.formation_start,
+                self.trading_end,
+            )
+        else:
+            raise ValueError(
+                "Invalid period. Must be 'formation', 'trading', or 'all'."
+            )
+
+        prices = pd.concat(
+            [
+                self.price1[period_slice],
+                self.price2[period_slice],
+            ],
+            axis=1,
+        )
         adv = np.ones_like(prices) * 1e12
         tc_engine = TransactionCostModel.make_engine(
             commision=0.0,
