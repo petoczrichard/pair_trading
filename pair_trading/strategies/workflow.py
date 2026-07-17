@@ -1,13 +1,26 @@
 from itertools import chain
+import yaml
 
 from pair_trading.catalog import PairTradingCatalog
+from pair_trading.logger.loggers import setup_logging
 
 
 class Workflow(metaclass=PairTradingCatalog):
 
     alias = 'workflow'
 
-    def __init__(self, config):
+    def __init__(
+        self,
+        config: dict | str,
+        logger: str = None,
+    ):
+        if isinstance(config, str) and config.endswith('.yaml'):
+            with open(config, "r") as config_file:
+                config = yaml.safe_load(config_file)
+
+        if logger is not None:
+            setup_logging(logger)
+
         self.data = None
         self.metadata = None
         self.selected_pairs = None
@@ -44,6 +57,12 @@ class Workflow(metaclass=PairTradingCatalog):
             config=config['pair_selection'],
         )
 
+        self.trading_rules = PairTradingCatalog.invoke(
+            category='step',
+            variant='trading_rules',
+            config=config.get('trading_rules') or {},
+        )
+
         self.backtest = PairTradingCatalog.invoke(
             category='step',
             variant='backtest',
@@ -54,7 +73,7 @@ class Workflow(metaclass=PairTradingCatalog):
         self.metadata, self.ohlcv = self.data_loader.run()
         periods = self.period.run(self.ohlcv)
 
-        all_pairs = []
+        all_period_pairs = []
         trade_sources = []
 
         for period in periods:
@@ -83,18 +102,10 @@ class Workflow(metaclass=PairTradingCatalog):
                 trading_start=period_dates['trading_start'],
                 trading_end=period_dates['trading_end'],
             )
-            all_pairs.append(selected_pairs)
+            all_period_pairs.append(selected_pairs)
 
-            max_ratio_of_portfolio_value = 1 / len(selected_pairs)
-            period_trade_sources = [
-                trade | {'max_ratio_of_portfolio_value': max_ratio_of_portfolio_value}  # noqa: E501
-                for pair in selected_pairs
-                for trade in pair.get_trades(period="trading")
-            ]
-            trade_sources.append(period_trade_sources)
-
-        self.selected_pairs = list(chain.from_iterable(all_pairs))
-        trade_sources = list(chain.from_iterable(trade_sources))
+        self.selected_pairs = list(chain.from_iterable(all_period_pairs))
+        trade_sources = self.trading_rules.run(all_period_pairs)
 
         self.portfolio = self.backtest.run(
             ohlcv=self.ohlcv,

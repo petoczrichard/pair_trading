@@ -14,11 +14,12 @@ from pair_trading.pair.implementations.engle_granger import EngleGrangerPair
 from pair_trading.pair.implementations.johansen import JohansenPair
 
 from pair_trading.strategies.step.implementations.pair_selection import PairSelectionStep  # noqa: E501
-from pair_trading.strategies.step.implementations.backtest import BacktestStep
+from pair_trading.strategies.step.implementations.trading_rules import TradingRulesStep  # noqa: E501
 from pair_trading.strategies.step.implementations.data_cleaner import DataCleanerStep  # noqa: E501
 from pair_trading.strategies.step.implementations.data_loader import DataLoaderStep  # noqa: E501
 from pair_trading.strategies.step.implementations.period import PeriodStep
 from pair_trading.strategies.step.implementations.grouper import GrouperStep
+from pair_trading.strategies.step.implementations.backtest import BacktestStep
 from pair_trading.strategies.step.implementations.null import NullStep
 
 from pair_trading.strategies.workflow import Workflow
