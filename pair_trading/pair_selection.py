@@ -48,9 +48,10 @@ class PairSelection(metaclass=PairTradingCatalog):
         trading_start_index = pandas_index.searchsorted(
             pd.Timestamp(trading_start)
         )
-        trading_end_index = pandas_index.searchsorted(
-            pd.Timestamp(trading_end)
-        ) + 1
+        trading_end_index = min(
+            pandas_index.searchsorted(pd.Timestamp(trading_end)) + 1,
+            len(pandas_index),
+        )
 
         self.pairs = [
             PairTradingCatalog.invoke(

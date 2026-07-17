@@ -28,9 +28,9 @@ class Portfolio:
                 .rename('portfolio')
         )
 
-        self.source_id_to_index=source_id_to_index,
-        self.ticker_to_index=ticker_to_index,
-        self.date_to_index=date_to_index,
+        self.source_id_to_index=source_id_to_index
+        self.ticker_to_index=ticker_to_index
+        self.date_to_index=date_to_index
 
     def contributions(
         self,

@@ -10,6 +10,7 @@ class Workflow(metaclass=PairTradingCatalog):
     def __init__(self, config):
         self.data = None
         self.metadata = None
+        self.selected_pairs = None
         self.backtester = None
         self.portfolio = None
 
@@ -53,6 +54,7 @@ class Workflow(metaclass=PairTradingCatalog):
         self.metadata, self.ohlcv = self.data_loader.run()
         periods = self.period.run(self.ohlcv)
 
+        all_pairs = []
         trade_sources = []
 
         for period in periods:
@@ -81,6 +83,7 @@ class Workflow(metaclass=PairTradingCatalog):
                 trading_start=period_dates['trading_start'],
                 trading_end=period_dates['trading_end'],
             )
+            all_pairs.append(selected_pairs)
 
             max_ratio_of_portfolio_value = 1 / len(selected_pairs)
             period_trade_sources = [
@@ -90,6 +93,7 @@ class Workflow(metaclass=PairTradingCatalog):
             ]
             trade_sources.append(period_trade_sources)
 
+        self.selected_pairs = list(chain.from_iterable(all_pairs))
         trade_sources = list(chain.from_iterable(trade_sources))
 
         self.portfolio = self.backtest.run(
