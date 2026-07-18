@@ -144,6 +144,10 @@ public:
         return holdings_;
     }
 
+    const TransactionCostEngine& tc_engine() const {
+        return tc_engine_;
+    }
+
 private:
     const double leverage_;
     const double initial_portfolio_value_;

@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 dev-richard
 pair_trading/data_store/
+
+*.md

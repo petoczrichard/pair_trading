@@ -11,6 +11,7 @@
 #include "backtester/trade_source.hpp"
 #include "backtester/transaction_cost_engine.hpp"
 #include "backtester/backtester_engine.hpp"
+#include "subportfolio.hpp"
 
 
 namespace nb = nanobind;
@@ -24,6 +25,22 @@ std::string repr(const T& value) {
 
 
 NB_MODULE(trading_core, m) {
+    m.def(
+        "calculate_subportfolio",
+        &calculate_subportfolio,
+        nb::arg("trades"),
+        nb::arg("prices"),
+        nb::arg("tc_engine")
+    );
+
+    m.def(
+        "calculate_subportfolios",
+        &calculate_subportfolios,
+        nb::arg("trades"),
+        nb::arg("prices"),
+        nb::arg("tc_engine")
+    );
+
     nb::class_<Trade>(m, "Trade")
         .def(nb::init<>())
         .def_rw("trade_id", &Trade::trade_id)
@@ -153,6 +170,11 @@ NB_MODULE(trading_core, m) {
         .def(
             "holdings",
             &BacktesterEngine::holdings,
+            nb::rv_policy::reference_internal
+        )
+        .def(
+            "tc_engine",
+            &BacktesterEngine::tc_engine,
             nb::rv_policy::reference_internal
         );
 }
