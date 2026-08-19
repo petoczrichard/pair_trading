@@ -21,7 +21,7 @@ data_cleaner:
     variant: equity
   clean_tickers: null
   clean_prices: null
-  remove_negative_prices: null
+  remove_non_positive_prices: null
   remove_too_many_zero_returns: null
   remove_stationary_prices: null
   minimum_liquidity: null

@@ -1,7 +1,7 @@
 import numpy as np
 
 from pair_trading.strategies.step.abstract import AbstractStep
-from pair_trading.portfolio import Portfolio
+from pair_trading.portfolio.portfolio import Portfolio
 from pair_trading.catalog import PairTradingCatalog
 from pair_trading.logger.logger_decorator import logger_decorator
 

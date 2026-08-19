@@ -20,15 +20,15 @@ class AbstractDataCleaner(ABC, metaclass=PairTradingMeta):
         if prices.isna().any().any():
             raise ValueError("Prices contain missing values after cleaning.")
 
-    def remove_negative_prices(
+    def remove_non_positive_prices(
         self,
         prices,
         formation_start,
         formation_end,
     ):
         formation_prices = prices[formation_start:formation_end]
-        negative_prices = (formation_prices < 0).sum() > 0
-        return prices[negative_prices[~negative_prices].index]
+        non_positive_prices = (formation_prices <= 0).sum() > 0
+        return prices[non_positive_prices[~non_positive_prices].index]
 
     def remove_too_many_zero_returns(
         self,

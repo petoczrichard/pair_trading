@@ -52,12 +52,12 @@ class DataCleanerStep(AbstractStep):
             **(self.config.get('clean_prices') or {}),
         )
 
-        if 'remove_negative_prices' in self.config:
-            filtered_prices = data_cleaner.remove_negative_prices(
+        if 'remove_non_positive_prices' in self.config:
+            filtered_prices = data_cleaner.remove_non_positive_prices(
                 prices=filtered_prices,
                 formation_start=formation_start,
                 formation_end=formation_end,
-                **(self.config['remove_negative_prices'] or {}),
+                **(self.config['remove_non_positive_prices'] or {}),
             )
 
         if 'remove_too_many_zero_returns' in self.config:
