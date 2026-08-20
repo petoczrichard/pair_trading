@@ -280,6 +280,28 @@ class AbstractPair(
             self.price2_values[self.formation_period_index],
         )
 
+    def adjust_spread_values(
+        self,
+        period_slice: slice,
+        zero_at_start: bool = False,
+        gross_exposure_normalize_exponent: float | None = None,
+    ):
+        period_spread_values = self.spread_values[period_slice].copy()
+
+        if gross_exposure_normalize_exponent is not None:
+            gross_exp = (
+                self.price1_values + abs(self.hedge_ratio) * self.price2_values
+            ) ** gross_exposure_normalize_exponent
+            denom = gross_exp[self.formation_period_index].mean()
+            normalized_threshold = gross_exp / denom
+
+            period_spread_values /= normalized_threshold[period_slice]
+
+        if zero_at_start:
+            period_spread_values -= period_spread_values[0]
+
+        return period_spread_values
+
     def compute_positions(
         self,
         period: Literal['formation', 'trading', 'all'] = 'formation',
@@ -289,6 +311,9 @@ class AbstractPair(
         short_entry: float = 2,
         short_exit: float = 0,
         short_stoploss: float = 5,
+        zero_at_start: bool = False,
+        gross_exposure_normalize_exponent: float | None = None,
+
     ):
         if period == 'formation':
             period_slice = self.formation_period_index
@@ -304,8 +329,14 @@ class AbstractPair(
                 "Invalid period. Must be 'formation', 'trading', or 'all'."
             )
 
-        values = numba_compute_positions(
-            spread=self.spread_values[period_slice],
+        period_spread_values = self.adjust_spread_values(
+            period_slice=period_slice,
+            zero_at_start=zero_at_start,
+            gross_exposure_normalize_exponent=gross_exposure_normalize_exponent,  # noqa: E501
+        )
+
+        positions = numba_compute_positions(
+            spread=period_spread_values,
             mean=self.spread_mean,
             std=self.spread_std,
             long_entry=long_entry,
@@ -316,7 +347,7 @@ class AbstractPair(
             short_stoploss=short_stoploss,
         )
 
-        return pd.Series(values, index=self.spread.index[period_slice])
+        return pd.Series(positions, index=self.spread.index[period_slice])
 
     def get_trades(
         self,
@@ -327,6 +358,8 @@ class AbstractPair(
         short_entry: float = 2,
         short_exit: float = 0,
         short_stoploss: float = 5,
+        zero_at_start: bool = False,
+        gross_exposure_normalize_exponent: float | None = None,
     ):
         positions = self.compute_positions(
             period=period,
@@ -336,6 +369,8 @@ class AbstractPair(
             short_entry=short_entry,
             short_exit=short_exit,
             short_stoploss=short_stoploss,
+            zero_at_start=zero_at_start,
+            gross_exposure_normalize_exponent=gross_exposure_normalize_exponent,  # noqa: E501
         )
         dates_ints = np.array(positions.index.map(pd.Timestamp.timestamp))
         positions_values = positions.values
