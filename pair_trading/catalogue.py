@@ -2,8 +2,8 @@ from abc import ABCMeta, ABC
 from typing import overload, Any
 
 
-class PairTradingCatalog(type):
-    catalog = {}
+class PairTradingCatalogue(type):
+    catalogue = {}
 
     def __new__(mcls, name, bases, namespace):
         cls = super().__new__(mcls, name, bases, namespace)
@@ -16,23 +16,23 @@ class PairTradingCatalog(type):
             is_root_class = root_class == cls
 
             if not is_root_class:
-                mcls.catalog.setdefault(root_class.alias, {})[cls.alias] = cls
+                mcls.catalogue.setdefault(root_class.alias, {})[cls.alias] = cls
 
         else:
-            mcls.catalog[cls.alias] = cls
+            mcls.catalogue[cls.alias] = cls
 
         return cls
 
     @classmethod
     def register(cls, alias=None):
         def decorator(func):
-            cls.catalog[alias or func.__name__] = func
+            cls.catalogue[alias or func.__name__] = func
             return func
         return decorator
 
     @classmethod
-    def get_catalog(mcls):
-        return mcls.catalog
+    def get_catalogue(mcls):
+        return mcls.catalogue
 
     @overload
     @classmethod
@@ -65,15 +65,15 @@ class PairTradingCatalog(type):
         **kwargs,
     ) -> Any:
         if name is not None:
-            return mcls.catalog[name](**kwargs)
+            return mcls.catalogue[name](**kwargs)
 
         if category is not None and variant is not None:
-            return mcls.catalog[category][variant](**kwargs)
+            return mcls.catalogue[category][variant](**kwargs)
 
         raise ValueError(
             "Provide either `name` or (`category` and `variant`)."
         )
 
 
-class PairTradingMeta(ABCMeta, PairTradingCatalog):
+class PairTradingMeta(ABCMeta, PairTradingCatalogue):
     ...

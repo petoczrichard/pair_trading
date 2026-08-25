@@ -1,11 +1,11 @@
 import numpy as np
 
-from pair_trading.catalog import PairTradingCatalog
+from pair_trading.catalogue import PairTradingCatalogue
 
 from trading_core import TransactionCostEngine
 
 
-class TransactionCostModel(metaclass=PairTradingCatalog):
+class TransactionCostModel(metaclass=PairTradingCatalogue):
 
     alias = 'transaction_cost_model'
 

@@ -1,11 +1,11 @@
 from itertools import chain
 import yaml
 
-from pair_trading.catalog import PairTradingCatalog
+from pair_trading.catalogue import PairTradingCatalogue
 from pair_trading.logger.loggers import setup_logging
 
 
-class Workflow(metaclass=PairTradingCatalog):
+class Workflow(metaclass=PairTradingCatalogue):
 
     alias = 'workflow'
 
@@ -27,43 +27,43 @@ class Workflow(metaclass=PairTradingCatalog):
         self.backtester = None
         self.portfolio = None
 
-        self.data_loader = PairTradingCatalog.invoke(
+        self.data_loader = PairTradingCatalogue.invoke(
             category='step',
             variant='data_loader',
             config=config['data_loader'],
         )
 
-        self.period = PairTradingCatalog.invoke(
+        self.period = PairTradingCatalogue.invoke(
             category='step',
             variant='period',
             config=config['period'],
         )
 
-        self.data_cleaner = PairTradingCatalog.invoke(
+        self.data_cleaner = PairTradingCatalogue.invoke(
             category='step',
             variant='data_cleaner',
             config=config['data_cleaner'],
         )
 
-        self.grouper = PairTradingCatalog.invoke(
+        self.grouper = PairTradingCatalogue.invoke(
             category='step',
             variant='grouper',
             config=config['grouper'],
         )
 
-        self.pair_selection = PairTradingCatalog.invoke(
+        self.pair_selection = PairTradingCatalogue.invoke(
             category='step',
             variant='pair_selection',
             config=config['pair_selection'],
         )
 
-        self.trading_rules = PairTradingCatalog.invoke(
+        self.trading_rules = PairTradingCatalogue.invoke(
             category='step',
             variant='trading_rules',
             config=config.get('trading_rules') or {},
         )
 
-        self.backtest = PairTradingCatalog.invoke(
+        self.backtest = PairTradingCatalogue.invoke(
             category='step',
             variant='backtest',
             config=config['backtest'],

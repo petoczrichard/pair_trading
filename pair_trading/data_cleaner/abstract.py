@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from pair_trading.numba_helpers.adf import adf
-from pair_trading.catalog import PairTradingMeta
+from pair_trading.catalogue import PairTradingMeta
 
 
 class AbstractDataCleaner(ABC, metaclass=PairTradingMeta):

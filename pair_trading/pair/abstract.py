@@ -5,7 +5,7 @@ import numpy as np
 
 from pair_trading.pair.mixins.metrics import MetricsMixin
 from pair_trading.pair.mixins.plotting import PlottingMixin
-from pair_trading.catalog import PairTradingMeta
+from pair_trading.catalogue import PairTradingMeta
 from pair_trading.transaction_cost_model import TransactionCostModel
 from pair_trading.numba_helpers.backtest import (
     compute_positions as numba_compute_positions,

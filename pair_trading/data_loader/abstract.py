@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from pair_trading.catalog import PairTradingMeta
+from pair_trading.catalogue import PairTradingMeta
 
 
 class AbstractDataLoader(ABC, metaclass=PairTradingMeta):

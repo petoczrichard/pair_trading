@@ -1,4 +1,4 @@
-from pair_trading.catalog import PairTradingCatalog
+from pair_trading.catalogue import PairTradingCatalogue
 
 
 def _resolve_key(pair, property_name, **kwargs):
@@ -10,7 +10,7 @@ def _resolve_key(pair, property_name, **kwargs):
     return property_
 
 
-@PairTradingCatalog.register()
+@PairTradingCatalogue.register()
 def asset_limit(pairs, maximum, sort_by, ascending=True, **kwargs):
     asset_counter = {}
     selected_pairs = []
@@ -33,7 +33,7 @@ def asset_limit(pairs, maximum, sort_by, ascending=True, **kwargs):
     return selected_pairs
 
 
-@PairTradingCatalog.register()
+@PairTradingCatalogue.register()
 def asset_limit_ratio(pairs, ratio, sort_by, ascending=True, **kwargs):
     target = len(pairs) * ratio
 
@@ -69,7 +69,7 @@ def asset_limit_ratio(pairs, ratio, sort_by, ascending=True, **kwargs):
     return best_pairs
 
 
-@PairTradingCatalog.register()
+@PairTradingCatalogue.register()
 def select_top(pairs, number, sort_by, ascending=True, **kwargs):
     return sorted(
         pairs,
@@ -78,7 +78,7 @@ def select_top(pairs, number, sort_by, ascending=True, **kwargs):
     )[:number]
 
 
-@PairTradingCatalog.register()
+@PairTradingCatalogue.register()
 def select_top_ratio(pairs, ratio, sort_by, ascending=True, **kwargs):
     return select_top(
         pairs=pairs,
