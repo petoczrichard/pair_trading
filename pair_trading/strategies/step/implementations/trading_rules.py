@@ -31,5 +31,5 @@ class TradingRulesStep(AbstractStep):
                 )
             ]
             trade_sources.append(period_trade_sources)
-        
+
         return list(chain.from_iterable(trade_sources))

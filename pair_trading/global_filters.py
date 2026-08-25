@@ -80,8 +80,10 @@ def select_top(pairs, number, sort_by, ascending=True, **kwargs):
 
 @PairTradingCatalog.register()
 def select_top_ratio(pairs, ratio, sort_by, ascending=True, **kwargs):
-    return sorted(
-        pairs,
-        key=lambda pair: _resolve_key(pair, sort_by, **kwargs),
-        reverse=not ascending,
+    return select_top(
+        pairs=pairs,
+        number=len(pairs) * ratio,
+        sort_by=sort_by,
+        ascending=ascending,
+        **kwargs,
     )[:len(pairs) * ratio]
