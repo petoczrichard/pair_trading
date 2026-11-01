@@ -137,13 +137,13 @@ class BacktestStep(AbstractStep):
                 borrowing_cost=tc_config.get('borrowing_cost', 0),
                 spread=tc_model.calibrate_spread_cost(
                     **(tc_config.get('spread') or {}),
-                ).fillna(0).values,
+                ).fillna(tc_config.get('spread')).values,
                 slippage=tc_model.calibrate_slippage_cost(
                     **(tc_config.get('slippage') or {}),
-                ).fillna(0).values,
+                ).fillna(tc_config.get('slippage')).values,
                 market_impact=tc_model.calibrate_impact_cost(
                     **(tc_config.get('market_impact') or {}),
-                ).fillna(0).values,
+                ).fillna(tc_config.get('market_impact')).values,
                 adv=adv,
             )
 
