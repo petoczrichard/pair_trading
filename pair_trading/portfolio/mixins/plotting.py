@@ -59,6 +59,19 @@ class PortfolioPlottingMixin:
             "Annualized Volatility", **kwargs,
         )
 
+    def sharpe_ratio_plot(self, periods_per_year=252, **kwargs):
+        return self._metric_scalar_plot(
+            self.sharpe_ratio(periods_per_year), "Sharpe Ratio",
+            **({"yaxis_tickformat": ".2f"} | kwargs),
+        )
+
+    def rolling_sharpe_ratio_plot(self, period, **kwargs):
+        return self._metric_series_plot(
+            self.rolling_sharpe_ratio(period),
+            f"Rolling Sharpe Ratio ({period} periods)",
+            "Sharpe Ratio", **kwargs,
+        )
+
     def currency_turnover_plot(self, **kwargs):
         return self._metric_series_plot(
             self.currency_turnover(), "Currency Turnover", "Turnover (currency)",

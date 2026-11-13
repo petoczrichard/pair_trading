@@ -39,6 +39,23 @@ class PortfolioMetricsMixin:
         returns = self.values.pct_change(fill_method=None)
         return returns.std() * periods_per_year ** 0.5
 
+    def sharpe_ratio(self, periods_per_year=252):
+        """Return annualized return / annualized volatility, with no risk-free adjustment."""
+        annualized_return = self.annualized_return(periods_per_year)
+        volatility = self.annualized_volatility(periods_per_year)
+        return annualized_return / volatility if volatility != 0 else np.nan
+
+    def rolling_sharpe_ratio(self, period):
+        """Return rolling period return / rolling annualized volatility.
+
+        Uses the existing rolling metrics directly, with no risk-free
+        adjustment. Zero volatility produces NaN.
+        """
+        volatility = self.rolling_annualized_volatility(period)
+        return (
+            self.rolling_return(period) / volatility.replace(0, np.nan)
+        ).rename("rolling_sharpe_ratio")
+
     def currency_turnover(self):
         backtest_prices = self.backtester.prices()
         turnover = np.zeros(backtest_prices.shape[0])
