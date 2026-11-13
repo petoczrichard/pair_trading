@@ -4,6 +4,14 @@ import pandas as pd
 
 
 class PortfolioMetricsMixin:
+    def _require_metric_data(self, metric, *attributes):
+        missing = [name for name in attributes if getattr(self, name, None) is None]
+        if missing:
+            raise ValueError(
+                f"{metric} requires {', '.join(missing)}; "
+                "portfolio values alone are insufficient."
+            )
+
     def drawdown(self):
         portfolio_values = self.values
         return portfolio_values / portfolio_values.cummax()
@@ -57,6 +65,7 @@ class PortfolioMetricsMixin:
         ).rename("rolling_sharpe_ratio")
 
     def currency_turnover(self):
+        self._require_metric_data("currency_turnover", "backtester")
         backtest_prices = self.backtester.prices()
         turnover = np.zeros(backtest_prices.shape[0])
 
@@ -69,9 +78,11 @@ class PortfolioMetricsMixin:
         return pd.Series(turnover, index=self.values.index)
 
     def relative_turnover(self):
+        self._require_metric_data("relative_turnover", "backtester")
         return self.currency_turnover() / self.values
 
     def trade_durations(self):
+        self._require_metric_data("trade_durations", "backtester")
         trades = self.backtester.blotter_trades()
 
         groups = groupby(
@@ -176,6 +187,7 @@ class PortfolioMetricsMixin:
                 "kind must be 'all', 'long', 'short', 'net', or 'gross'."
             )
 
+        self._require_metric_data("exposure", "prices", "holdings")
         # The final six columns contain cash and transaction costs.
         exposures = (self.prices * self.holdings).iloc[:, :-6]
         long_exposure = exposures[exposures > 0].sum(axis=1)
@@ -203,6 +215,7 @@ class PortfolioMetricsMixin:
         if not np.isfinite(threshold) or threshold < 0:
             raise ValueError("threshold must be finite and nonnegative.")
 
+        self._require_metric_data("number_of_assets", "prices", "holdings")
         exposures = (self.prices * self.holdings).iloc[:, :-6]
         if kind == "long":
             positions = exposures > threshold
@@ -221,6 +234,7 @@ class PortfolioMetricsMixin:
         using absolute currency exposure > threshold. Cash and costs are
         excluded. Dates with zero gross exposure or no active assets return NaN.
         """
+        self._require_metric_data("effective_asset_ratio", "prices", "holdings")
         asset_count = self.number_of_assets()
         exposures = (self.prices * self.holdings).iloc[:, :-6]
         gross_exposure = exposures.abs().sum(axis=1)
