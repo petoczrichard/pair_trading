@@ -11,7 +11,7 @@ class PortfolioMetricsMixin:
     def rolling_return(self, period):
         return self.values.pct_change(period=period)
 
-    def annualized_volatility(period):
+    def rolling_annualized_volatility(period):
         return (
             self.values
             .pct_change()
@@ -19,6 +19,25 @@ class PortfolioMetricsMixin:
             .rolling(period=period)
             .std()
         ) * 252 ** 0.5
+
+    def annualized_return(self, periods_per_year=252):
+        if not np.isfinite(periods_per_year) or periods_per_year <= 0:
+            raise ValueError("periods_per_year must be finite and positive.")
+        values = self.values
+        if len(values) < 2:
+            return np.nan
+        if (values <= 0).any():
+            raise ValueError("Portfolio values must be positive.")
+
+        return (values.iloc[-1] / values.iloc[0]) ** (
+            periods_per_year / (len(values) - 1)
+        ) - 1
+
+    def annualized_volatility(self, periods_per_year=252):
+        if not np.isfinite(periods_per_year) or periods_per_year <= 0:
+            raise ValueError("periods_per_year must be finite and positive.")
+        returns = self.values.pct_change(fill_method=None)
+        return returns.std() * periods_per_year ** 0.5
 
     def currency_turnover(self):
         backtest_prices = self.backtester.prices()
@@ -127,3 +146,70 @@ class PortfolioMetricsMixin:
             })
 
         return pd.DataFrame(episodes, columns=columns)
+
+    def exposure(self, kind="all", relative=False):
+        """Return exposure in currency amounts or relative to portfolio value.
+
+        Select 'long', 'short', 'net', or 'gross' for a Series, or 'all'
+        for a DataFrame. Short exposure is negative. Cash and transaction
+        costs are excluded. Set relative=True to divide by portfolio value.
+        """
+        if kind not in ("all", "long", "short", "net", "gross"):
+            raise ValueError(
+                "kind must be 'all', 'long', 'short', 'net', or 'gross'."
+            )
+
+        # The final six columns contain cash and transaction costs.
+        exposures = (self.prices * self.holdings).iloc[:, :-6]
+        long_exposure = exposures[exposures > 0].sum(axis=1)
+        short_exposure = exposures[exposures < 0].sum(axis=1)
+        result = pd.DataFrame({
+            "long": long_exposure,
+            "short": short_exposure,
+            "net": long_exposure + short_exposure,
+            "gross": long_exposure.abs() + short_exposure.abs(),
+        })
+
+        if relative:
+            result = result.div(self.values, axis=0)
+
+        return result if kind == "all" else result[kind]
+
+    def number_of_assets(self, kind="all", threshold=1e-2):
+        """Count positions per date with absolute currency exposure > threshold.
+
+        Select 'long', 'short', or 'all' (both sides). The threshold must be
+        finite and nonnegative. Cash and transaction costs are excluded.
+        """
+        if kind not in ("all", "long", "short"):
+            raise ValueError("kind must be 'all', 'long', or 'short'.")
+        if not np.isfinite(threshold) or threshold < 0:
+            raise ValueError("threshold must be finite and nonnegative.")
+
+        exposures = (self.prices * self.holdings).iloc[:, :-6]
+        if kind == "long":
+            positions = exposures > threshold
+        elif kind == "short":
+            positions = exposures < -threshold
+        else:
+            positions = exposures.abs() > threshold
+
+        return positions.sum(axis=1).rename("number_of_assets")
+
+    def effective_asset_ratio(self):
+        """Return the effective asset count divided by the active asset count.
+
+        The effective count is the inverse sum of squared exposures normalized
+        by gross exposure. The threshold applies only to the active count,
+        using absolute currency exposure > threshold. Cash and costs are
+        excluded. Dates with zero gross exposure or no active assets return NaN.
+        """
+        asset_count = self.number_of_assets()
+        exposures = (self.prices * self.holdings).iloc[:, :-6]
+        gross_exposure = exposures.abs().sum(axis=1)
+        weights = exposures.div(gross_exposure, axis=0)
+        concentration = weights.pow(2).sum(axis=1)
+
+        return (
+            1 / concentration / asset_count
+        ).rename("effective_asset_ratio")
