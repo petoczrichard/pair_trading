@@ -9,14 +9,14 @@ class PortfolioMetricsMixin:
         return portfolio_values / portfolio_values.cummax()
 
     def rolling_return(self, period):
-        return self.values.pct_change(period=period)
+        return self.values.pct_change(periods=period)
 
-    def rolling_annualized_volatility(period):
+    def rolling_annualized_volatility(self, period):
         return (
             self.values
             .pct_change()
             .dropna()
-            .rolling(period=period)
+            .rolling(window=period)
             .std()
         ) * 252 ** 0.5
 
