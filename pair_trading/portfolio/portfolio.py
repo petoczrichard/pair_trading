@@ -22,7 +22,11 @@ class Portfolio(
         date_to_index=None,
         *,
         values=None,
+        name="portfolio",
     ):
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("name must be a nonempty string.")
+        self.name = name
         if backtester is None and values is None:
             raise ValueError("Provide either backtester or values.")
         if backtester is not None and values is not None:

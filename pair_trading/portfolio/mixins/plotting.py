@@ -27,6 +27,14 @@ class PortfolioPlottingMixin:
         figure.update_layout(**kwargs)
         return figure
 
+    def values_plot(self, **kwargs):
+        """Plot portfolio value over time, including values-only benchmarks."""
+        figure = self._metric_series_plot(
+            self.values, "Portfolio Value", "Value (currency)", **kwargs,
+        )
+        figure.update_traces(name=self.name)
+        return figure
+
     def drawdown_plot(self, **kwargs):
         """Plot percentage losses from the running portfolio peak."""
         return self._metric_series_plot(
