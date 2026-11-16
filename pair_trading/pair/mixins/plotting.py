@@ -7,7 +7,7 @@ from pair_trading.plotting import (
     equity_curve_plot as _equity_curve_plot,
     figures_to_subplot,
 )
-from pair_trading.utils import filter_allowed_kwargs
+from algo_toolbox.utils import filter_allowed_kwargs
 
 
 ALIAS_TO_PAIR_TYPE = {

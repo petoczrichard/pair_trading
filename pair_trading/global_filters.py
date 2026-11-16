@@ -1,4 +1,4 @@
-from pair_trading.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import PairTradingCatalogue
 
 
 def _resolve_key(pair, property_name, **kwargs):

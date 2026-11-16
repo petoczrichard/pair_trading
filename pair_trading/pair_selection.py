@@ -3,8 +3,8 @@ from math import ceil
 import numpy as np
 import pandas as pd
 
-from pair_trading.catalogue import PairTradingCatalogue
-from pair_trading.utils import filter_allowed_kwargs
+from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.utils import filter_allowed_kwargs
 
 
 def _calculate_pair_worker(pair, kwargs):

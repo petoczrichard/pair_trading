@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from pair_trading.catalogue import PairTradingMeta
+from algo_toolbox.catalogue import PairTradingMeta
 
 
 class AbstractStep(ABC, metaclass=PairTradingMeta):

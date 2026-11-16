@@ -1,11 +1,11 @@
 import numpy as np
 
 from pair_trading.strategies.step.abstract import AbstractStep
-from pair_trading.portfolio.portfolio import Portfolio
-from pair_trading.catalogue import PairTradingCatalogue
-from pair_trading.logger.logger_decorator import logger_decorator
+from algo_toolbox.portfolio.portfolio import Portfolio
+from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.logger.logger_decorator import logger_decorator
 
-from trading_core import Basket, TradeSource, BacktesterEngine
+from algo_toolbox import Basket, TradeSource, BacktesterEngine
 
 
 class BacktestStep(AbstractStep):

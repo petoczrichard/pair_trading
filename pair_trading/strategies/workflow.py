@@ -1,8 +1,8 @@
 from itertools import chain
 import yaml
 
-from pair_trading.catalogue import PairTradingCatalogue
-from pair_trading.logger.loggers import setup_logging
+from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.logger.loggers import setup_logging
 
 
 class Workflow(metaclass=PairTradingCatalogue):

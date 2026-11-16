@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import itertools
 
-from pair_trading.catalogue import PairTradingMeta
+from algo_toolbox.catalogue import PairTradingMeta
 
 
 class AbstractGrouper(

@@ -1,5 +1,5 @@
 from pair_trading.numba_helpers.statistical import rma_regression
-from pair_trading.numba_helpers.adf import adf
+from algo_toolbox.numba_helpers.adf import adf
 from pair_trading.pair.abstract import AbstractPair
 
 

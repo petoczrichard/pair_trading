@@ -1,7 +1,7 @@
 from itertools import chain
 
 from pair_trading.strategies.step.abstract import AbstractStep
-from pair_trading.logger.logger_decorator import logger_decorator
+from algo_toolbox.logger.logger_decorator import logger_decorator
 
 
 class TradingRulesStep(AbstractStep):

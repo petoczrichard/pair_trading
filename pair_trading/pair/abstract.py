@@ -5,8 +5,8 @@ import numpy as np
 
 from pair_trading.pair.mixins.metrics import MetricsMixin
 from pair_trading.pair.mixins.plotting import PlottingMixin
-from pair_trading.catalogue import PairTradingMeta
-from pair_trading.transaction_cost_model import TransactionCostModel
+from algo_toolbox.catalogue import PairTradingMeta
+from algo_toolbox.transaction_cost_model import TransactionCostModel
 from pair_trading.numba_helpers.backtest import (
     compute_positions as numba_compute_positions,
     get_trade_dates as get_trade_dates_numba,
@@ -19,9 +19,9 @@ from pair_trading.numba_helpers.statistical import (
     numba_std,
     numba_create_spread,
 )
-from pair_trading.numba_helpers.linalg import roll_numba
+from algo_toolbox.numba_helpers.linalg import roll_numba
 
-from trading_core import (
+from algo_toolbox import (
     TradeType,
     TradeSource,
     Basket,
