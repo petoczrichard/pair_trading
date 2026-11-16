@@ -2,7 +2,7 @@ from os import cpu_count
 from concurrent.futures import ProcessPoolExecutor
 
 from pair_trading.strategies.step.abstract import AbstractStep
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.logger.logger_decorator import logger_decorator
 
 
@@ -40,7 +40,7 @@ class PairSelectionStep(AbstractStep):
         trading_start,
         trading_end,
     ):
-        pair_selection = PairTradingCatalogue.invoke(
+        pair_selection = AlgoToolboxCatalogue.invoke(
             name='pair_selection',
             pair_names=pair_names,
             prices=prices,

@@ -2,7 +2,7 @@ import numpy as np
 
 from pair_trading.strategies.step.abstract import AbstractStep
 from algo_toolbox.portfolio.portfolio import Portfolio
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.logger.logger_decorator import logger_decorator
 
 from algo_toolbox import Basket, TradeSource, BacktesterEngine
@@ -93,7 +93,7 @@ class BacktestStep(AbstractStep):
 
         if 'transaction_cost' not in self.config:
             adv = np.ones_like(prices) * 1e100
-            tc_model = PairTradingCatalogue.invoke(
+            tc_model = AlgoToolboxCatalogue.invoke(
                 name='transaction_cost_model',
                 open_prices=None,
                 high_prices=None,
@@ -120,7 +120,7 @@ class BacktestStep(AbstractStep):
                 close_prices * ohlcv.xs('Volume', level=1, axis=1)
             )
 
-            tc_model = PairTradingCatalogue.invoke(
+            tc_model = AlgoToolboxCatalogue.invoke(
                 name='transaction_cost_model',
                 open_prices=open_prices,
                 high_prices=high_prices,

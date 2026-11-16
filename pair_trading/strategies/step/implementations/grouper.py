@@ -1,5 +1,5 @@
 from pair_trading.strategies.step.abstract import AbstractStep
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.logger.logger_decorator import logger_decorator
 
 
@@ -17,7 +17,7 @@ class GrouperStep(AbstractStep):
         },
     )
     def run(self, prices, metadata, formation_start, formation_end):
-        grouper = PairTradingCatalogue.invoke(
+        grouper = AlgoToolboxCatalogue.invoke(
             category='grouper',
             **self.config['setup'],
         )

@@ -1,5 +1,5 @@
 from pair_trading.strategies.step.abstract import AbstractStep
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.utils import date_offset
 from algo_toolbox.logger.logger_decorator import logger_decorator
 
@@ -28,7 +28,7 @@ class PeriodStep(AbstractStep):
             self.config['trading_length'],
         )
 
-        return PairTradingCatalogue.invoke(
+        return AlgoToolboxCatalogue.invoke(
             name='rolling_period',
             formation_start=first_formation_start,
             formation_end=first_formation_end,

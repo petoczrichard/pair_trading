@@ -3,7 +3,7 @@ from math import ceil
 import numpy as np
 import pandas as pd
 
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.utils import filter_allowed_kwargs
 
 
@@ -12,7 +12,7 @@ def _calculate_pair_worker(pair, kwargs):
     return pair
 
 
-class PairSelection(metaclass=PairTradingCatalogue):
+class PairSelection(metaclass=AlgoToolboxCatalogue):
 
     alias = 'pair_selection'
 
@@ -54,7 +54,7 @@ class PairSelection(metaclass=PairTradingCatalogue):
         )
 
         self.pairs = [
-            PairTradingCatalogue.invoke(
+            AlgoToolboxCatalogue.invoke(
                 category='pair',
                 variant=pair_type,
                 name1=name1,
@@ -108,7 +108,7 @@ class PairSelection(metaclass=PairTradingCatalogue):
                     ]
 
                 case {"type": "global"}:
-                    filtered_pairs = PairTradingCatalogue.invoke(
+                    filtered_pairs = AlgoToolboxCatalogue.invoke(
                         pairs=filtered_pairs,
                         **filter_,
                     )

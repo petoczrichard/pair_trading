@@ -1,11 +1,11 @@
 from itertools import chain
 import yaml
 
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.logger.loggers import setup_logging
 
 
-class Workflow(metaclass=PairTradingCatalogue):
+class Workflow(metaclass=AlgoToolboxCatalogue):
 
     alias = 'workflow'
 
@@ -27,43 +27,43 @@ class Workflow(metaclass=PairTradingCatalogue):
         self.backtester = None
         self.portfolio = None
 
-        self.data_loader = PairTradingCatalogue.invoke(
+        self.data_loader = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='data_loader',
             config=config['data_loader'],
         )
 
-        self.period = PairTradingCatalogue.invoke(
+        self.period = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='period',
             config=config['period'],
         )
 
-        self.data_cleaner = PairTradingCatalogue.invoke(
+        self.data_cleaner = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='data_cleaner',
             config=config['data_cleaner'],
         )
 
-        self.grouper = PairTradingCatalogue.invoke(
+        self.grouper = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='grouper',
             config=config['grouper'],
         )
 
-        self.pair_selection = PairTradingCatalogue.invoke(
+        self.pair_selection = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='pair_selection',
             config=config['pair_selection'],
         )
 
-        self.trading_rules = PairTradingCatalogue.invoke(
+        self.trading_rules = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='trading_rules',
             config=config.get('trading_rules') or {},
         )
 
-        self.backtest = PairTradingCatalogue.invoke(
+        self.backtest = AlgoToolboxCatalogue.invoke(
             category='step',
             variant='backtest',
             config=config['backtest'],

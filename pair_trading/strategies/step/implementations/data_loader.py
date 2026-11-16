@@ -1,5 +1,5 @@
 from pair_trading.strategies.step.abstract import AbstractStep
-from algo_toolbox.catalogue import PairTradingCatalogue
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
 from algo_toolbox.logger.logger_decorator import logger_decorator
 
 
@@ -14,7 +14,7 @@ class DataLoaderStep(AbstractStep):
         },
     )
     def run(self):
-        data_loader = PairTradingCatalogue.invoke(
+        data_loader = AlgoToolboxCatalogue.invoke(
             category='data_loader',
             **self.config['setup'],
         )

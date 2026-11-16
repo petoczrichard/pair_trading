@@ -5,7 +5,7 @@ import numpy as np
 
 from pair_trading.pair.mixins.metrics import MetricsMixin
 from pair_trading.pair.mixins.plotting import PlottingMixin
-from algo_toolbox.catalogue import PairTradingMeta
+from algo_toolbox.catalogue import AlgoToolboxMeta
 from algo_toolbox.transaction_cost_model import TransactionCostModel
 from pair_trading.numba_helpers.backtest import (
     compute_positions as numba_compute_positions,
@@ -34,7 +34,7 @@ class AbstractPair(
     ABC,
     MetricsMixin,
     PlottingMixin,
-    metaclass=PairTradingMeta,
+    metaclass=AlgoToolboxMeta,
 ):
 
     alias = 'pair'
