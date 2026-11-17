@@ -3,7 +3,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from pair_trading.utils import filter_allowed_kwargs
+from algo_toolbox.utils import filter_allowed_kwargs
 from pair_trading.constants import (
     FORMATION_BACKGROUND_COLOR,
     TRADING_BACKGROUND_COLOR,

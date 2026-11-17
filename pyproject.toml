@@ -1,9 +1,8 @@
 [build-system]
 requires = [
-    "scikit-build-core",
-    "nanobind",
+    "setuptools",
 ]
-build-backend = "scikit_build_core.build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pair_trading"
@@ -16,29 +15,22 @@ authors = [
 requires-python = ">=3.12"
 
 dependencies = [
+    "algo_toolbox",
     "pandas",
     "numpy",
     "numba",
     "plotly",
-    "matplotlib",
-    "nbformat>=4.2.0",
     "scikit-learn",
     "statsmodels",
-    "arch",
-    "pylr2",
-    "requests",
-    "yfinance",
-    "pyarrow",
-    "lxml",
-    "openpyxl",
+    "PyYAML",
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["pair_trading", "pair_trading.*"]
+namespaces = false
 
 [tool.setuptools.package-data]
 pair_trading = [
-    "data/**/*.csv",
-    "data/**/*.json",
-    "data/**/*.parquet",
+    "strategies/configs/*.yaml",
 ]

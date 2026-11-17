@@ -1,6 +1,3 @@
-import pandas.tseries.offsets as offsets
-
-
 FORMATION_BACKGROUND_COLOR = "lightgreen"
 TRADING_BACKGROUND_COLOR = "pink"
 
@@ -44,50 +41,3 @@ EXIT_LINE_STYLE = "dot"
 STOPLOSS_LINE_STYLE = "solid"
 
 ISO8601_DATE_FORMAT = "%Y-%m-%d"
-REPLACE_PARAMS = [
-    "year",
-    "mnth",
-    "day",
-    "weekday",
-    "hour",
-    "minute",
-    "second",
-    "microsecond",
-]
-
-ADD_PARAMS = [
-    "years",
-    "months",
-    "weeks",
-    "days",
-    "hours",
-    "minutes",
-    "seconds",
-    "milliseconds",
-    "microseconds",
-    "nanoseconds",
-]
-
-OFFSET_MAPPING = {
-    "monthbegin": offsets.MonthBegin,
-    "monthend": offsets.MonthEnd,
-    "semimonthbegin": offsets.SemiMonthBegin,
-    "semimonthend": offsets.SemiMonthEnd,
-    "quarterbegin": offsets.QuarterBegin,
-    "quarterend": offsets.QuarterEnd,
-    "yearbegin": offsets.YearBegin,
-    "yearend": offsets.YearEnd,
-}
-
-OFFSET_DEFAULTS = {
-    "quarterbegin": {"startingMonth": 1},
-    "quarterend": {"startingMonth": 3},
-}
-
-DEFAULT_OFFSET = {"days": 0}
-
-REPLACE_PATTERN = rf"(?P<replace_param>{'|'.join(REPLACE_PARAMS)})=(?P<replace_value>\d+)"  # noqa: E501
-ADD_PATTERN = rf"(?P<add_value>[+-]?\d+)(?P<add_param>{'|'.join(ADD_PARAMS)})"
-OFFSET_PATTERN = rf"(?P<offset_value>[+-]?\d+?)?(?P<offset_param>{'|'.join(OFFSET_MAPPING.keys())})"  # noqa: E501
-
-DATE_REGEX = f"{REPLACE_PATTERN}|{ADD_PATTERN}|{OFFSET_PATTERN}"

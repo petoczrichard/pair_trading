@@ -1,11 +1,11 @@
 from typing import Iterator, Self
 import pandas as pd
 
-from pair_trading.catalogue import PairTradingCatalogue
-from pair_trading.utils import date_offset
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
+from algo_toolbox.utils import date_offset
 
 
-class RollingPeriod(metaclass=PairTradingCatalogue):
+class RollingPeriod(metaclass=AlgoToolboxCatalogue):
 
     alias = 'rolling_period'
 

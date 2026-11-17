@@ -3,7 +3,7 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import OPTICS
 
 from pair_trading.grouper.abstract import AbstractGrouper
-from pair_trading.utils import filter_allowed_kwargs
+from algo_toolbox.utils import filter_allowed_kwargs
 
 
 class StatisticalFactorsGrouper(AbstractGrouper):

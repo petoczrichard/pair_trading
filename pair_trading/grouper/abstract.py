@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 import itertools
 
-from pair_trading.catalogue import PairTradingMeta
+from algo_toolbox.catalogue import AlgoToolboxMeta
 
 
 class AbstractGrouper(
     ABC,
-    metaclass=PairTradingMeta,
+    metaclass=AlgoToolboxMeta,
 ):
 
     alias = 'grouper'

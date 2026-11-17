@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from pair_trading.catalogue import PairTradingMeta
+from algo_toolbox.catalogue import AlgoToolboxMeta
 
 
-class AbstractStep(ABC, metaclass=PairTradingMeta):
+class AbstractStep(ABC, metaclass=AlgoToolboxMeta):
 
     alias = 'step'
 

@@ -1,6 +1,6 @@
 from pair_trading.strategies.step.abstract import AbstractStep
-from pair_trading.catalogue import PairTradingCatalogue
-from pair_trading.logger.logger_decorator import logger_decorator
+from algo_toolbox.catalogue import AlgoToolboxCatalogue
+from algo_toolbox.logger.logger_decorator import logger_decorator
 
 
 class DataCleanerStep(AbstractStep):
@@ -35,7 +35,7 @@ class DataCleanerStep(AbstractStep):
         )
         currency_volume = volumes * (1 if is_crypto else prices)
 
-        data_cleaner = PairTradingCatalogue.invoke(
+        data_cleaner = AlgoToolboxCatalogue.invoke(
             category='data_cleaner',
             **self.config['setup'],
         )
